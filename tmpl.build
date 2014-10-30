@@ -1,0 +1,67 @@
+﻿<?xml version="1.0"?>
+<project name="Framework" default="build">
+    <property name="build.dir" value="${environment::get-variable('IGS_PATH')}\dist" />
+    <property name="debug" value="true" />
+    <property name="unsafe" value="true" />
+
+    <target name="build" depends="Tmpl">
+
+    </target>
+
+    <target name="Tmpl">
+        <property name="unsafe" value="true" />
+        <csc target="library" output="${environment::get-variable('IGS_PATH')}\dist\igs.hcms.Tmpl.dll" debug="${debug}" unsafe="${unsafe}">
+            <nowarn>
+                <!-- do not report deprecation warnings -->
+                <warning number="0618" />
+                <warning number="0168" />
+                <warning number="0108" />
+                <warning number="0219" />
+                <warning number="0252" />
+            </nowarn>
+            <sources>
+                <include name="Elements\BinaryExpression.cs" />
+                <include name="Elements\ArrayAccess.cs" />
+                <include name="Elements\DoubleLiteral.cs" />
+                <include name="Elements\MCall.cs" />
+                <include name="Elements\IntLiteral.cs" />
+                <include name="Elements\TagIf.cs" />
+                <include name="Elements\FCall.cs" />
+                <include name="Elements\DotAttribute.cs" />
+                <include name="Elements\Element.cs" />
+                <include name="Elements\Expression.cs" />
+                <include name="Elements\FieldAccess.cs" />
+                <include name="Elements\Name.cs" />
+                <include name="Elements\StringExpression.cs" />
+                <include name="Elements\StringLiteral.cs" />
+                <include name="Elements\Tag.cs" />
+                <include name="Elements\TagClose.cs" />
+                <include name="Elements\Text.cs" />
+                <include name="Parser\Lexer.cs" />
+                <include name="Parser\Parser.cs" />
+                <include name="Parser\Token.cs" />
+                <include name="Extensions\TypeRef.cs" />
+                <include name="Extensions\Templates.cs" />
+                <include name="Extensions\EntityCompiler.cs" />
+                <include name="Extensions\Logical.cs" />
+                <include name="ITmplHandler.cs" />
+                <include name="TmplManager.cs" />
+                <include name="Tmpl.cs" />
+                <include name="TmplException.cs" />
+                <include name="Util.cs" />
+                <include name="Variable.cs" />
+
+            </sources>
+            <references>
+                <include name = "${environment::get-variable('IGS_PATH')}\dist\igs.hcms.Dapper.dll" />
+            </references>
+        </csc>
+        <copy file="${environment::get-variable('IGS_PATH')}\dist\igs.hcms.Tmpl.dll" tofile="${environment::get-variable('IGS_PATH')}\Generator\HCMS\igs.hcms.Tmpl.dll"  failonerror="false" />
+        <copy file="${environment::get-variable('IGS_PATH')}\dist\igs.hcms.Tmpl.pdb" tofile="${environment::get-variable('IGS_PATH')}\Generator\HCMS\igs.hcms.Tmpl.pdb"  failonerror="false" />
+
+        <copy file="${environment::get-variable('IGS_PATH')}\dist\igs.hcms.Tmpl.dll" tofile="${environment::get-variable('IGS_PATH')}\Proj\HCMS\bin\igs.hcms.Tmpl.dll"  failonerror="false" />
+        <copy file="${environment::get-variable('IGS_PATH')}\dist\igs.hcms.Tmpl.pdb" tofile="${environment::get-variable('IGS_PATH')}\Proj\HCMS\bin\igs.hcms.Tmpl.pdb"  failonerror="false" />
+
+
+    </target>
+</project>
