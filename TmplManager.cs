@@ -18,6 +18,8 @@ namespace Igs.Hcms.Tmpl
 
     public class TmplManager {
         const string ZFILE_NAME = "TmplManager";
+
+        private static readonly object _PENDING = new object();
         private bool _silentErrors;
         private bool _scriptMode;
 
@@ -32,14 +34,10 @@ namespace Igs.Hcms.Tmpl
         private Templates _Templates;
         private IDbConnection _connection;
 
-        public IDbConnection Connection
-        {
-            get {
-                return _connection;
-            } set {
-                _connection = value;
-            }
-        }
+        public ITmplHandler Handler     { get { return _handler;      } set { _handler      = value; }  }
+        public bool SilentErrors        { get { return _silentErrors; } set { _silentErrors = value; }  }
+        public bool ScriptMode          { get { return _scriptMode;   } set { _scriptMode   = value; }  }
+        public IDbConnection Connection { get { return _connection;   } set { _connection   = value; }  }
 
         public TmplManager(Tmpl tmpl)
         {
@@ -57,33 +55,6 @@ namespace Igs.Hcms.Tmpl
             return new TmplManager(iTmpl);
         }
 
-        public ITmplHandler Handler
-        {
-            get {
-                return this._handler;
-            } set {
-                this._handler = value;
-            }
-        }
-
-        public bool SilentErrors
-        {
-            get {
-                return _silentErrors;
-            } set {
-                _silentErrors = value;
-            }
-        }
-
-        public bool ScriptMode
-        {
-            get {
-                return _scriptMode;
-            } set {
-                _scriptMode = value;
-            }
-        }
-
         private Dictionary<string, ITmplHandler> CustomTags
         {
             get {
@@ -97,7 +68,9 @@ namespace Igs.Hcms.Tmpl
 
         public void Register(string tagName, ITmplHandler handler)
         {
-            CustomTags.Add(tagName, handler);
+            lock(_PENDING){
+                CustomTags[tagName] = handler;
+            }
         }
 
         public bool IsTagRegistered(string tagName)
@@ -361,9 +334,9 @@ namespace Igs.Hcms.Tmpl
 
                 } else if (exp.Lhs is FieldAccess) {
 
-                    FieldAccess fa = (FieldAccess)exp.Lhs;
-                    rhsValue     = EvalExpression(exp.Rhs);
-                    object obj = EvalExpression(fa.Exp);
+                    FieldAccess fa      = (FieldAccess)exp.Lhs;
+                    rhsValue            = EvalExpression(exp.Rhs);
+                    object obj          = EvalExpression(fa.Exp);
                     string propertyName = fa.Field;
 
                     setProperty(obj, propertyName, rhsValue);
