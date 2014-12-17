@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0"?>
 <project name="Framework" default="build">
-    <property name="build.dir" value="${environment::get-variable('IGS_PATH')}\dist" />
+    <property name="build.dir" value="${environment::get-variable('TRUNK_PATH')}\dist" />
     <property name="debug" value="true" />
     <property name="unsafe" value="true" />
 
@@ -10,7 +10,7 @@
 
     <target name="Tmpl">
         <property name="unsafe" value="true" />
-        <csc target="library" output="${environment::get-variable('IGS_PATH')}\dist\igs.hcms.Tmpl.dll" debug="${debug}" unsafe="${unsafe}">
+        <csc target="library" output="${environment::get-variable('TRUNK_PATH')}\dist\igs.hcms.Tmpl.dll" debug="${debug}" unsafe="${unsafe}">
             <nowarn>
                 <!-- do not report deprecation warnings -->
                 <warning number="0618" />
@@ -53,14 +53,14 @@
 
             </sources>
             <references>
-                <include name = "${environment::get-variable('IGS_PATH')}\dist\igs.hcms.Dapper.dll" />
+                <include name = "${environment::get-variable('TRUNK_PATH')}\dist\igs.hcms.Dapper.dll" />
             </references>
         </csc>
-        <copy file="${environment::get-variable('IGS_PATH')}\dist\igs.hcms.Tmpl.dll" tofile="${environment::get-variable('IGS_PATH')}\Generator\HCMS\igs.hcms.Tmpl.dll"  failonerror="false" />
-        <copy file="${environment::get-variable('IGS_PATH')}\dist\igs.hcms.Tmpl.pdb" tofile="${environment::get-variable('IGS_PATH')}\Generator\HCMS\igs.hcms.Tmpl.pdb"  failonerror="false" />
+        <copy file="${environment::get-variable('TRUNK_PATH')}\dist\igs.hcms.Tmpl.dll" tofile="${environment::get-variable('TRUNK_PATH')}\Generator\HCMS\igs.hcms.Tmpl.dll"  failonerror="false" />
+        <copy file="${environment::get-variable('TRUNK_PATH')}\dist\igs.hcms.Tmpl.pdb" tofile="${environment::get-variable('TRUNK_PATH')}\Generator\HCMS\igs.hcms.Tmpl.pdb"  failonerror="false" />
 
-        <copy file="${environment::get-variable('IGS_PATH')}\dist\igs.hcms.Tmpl.dll" tofile="${environment::get-variable('IGS_PATH')}\Proj\HCMS\bin\igs.hcms.Tmpl.dll"  failonerror="false" />
-        <copy file="${environment::get-variable('IGS_PATH')}\dist\igs.hcms.Tmpl.pdb" tofile="${environment::get-variable('IGS_PATH')}\Proj\HCMS\bin\igs.hcms.Tmpl.pdb"  failonerror="false" />
+        <copy file="${environment::get-variable('TRUNK_PATH')}\dist\igs.hcms.Tmpl.dll" tofile="${environment::get-variable('PROJ_PATH')}\HCMS\bin\igs.hcms.Tmpl.dll"  failonerror="false" />
+        <copy file="${environment::get-variable('TRUNK_PATH')}\dist\igs.hcms.Tmpl.pdb" tofile="${environment::get-variable('PROJ_PATH')}\HCMS\bin\igs.hcms.Tmpl.pdb"  failonerror="false" />
 
 
     </target>

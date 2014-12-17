@@ -1,15 +1,12 @@
-﻿#region Using directives
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Data;
 using System.Reflection;
 using System.IO;
-#endregion
 
 using Igs.Hcms.Tmpl.Elements;
-//using Igs.Hcms.Dapper;
 
 namespace Igs.Hcms.Tmpl
 {
@@ -103,7 +100,7 @@ namespace Igs.Hcms.Tmpl
 
         }
 
-        #region Functions
+#region Functions
 
         public void RegisterFunction(string functionName, FunctionDefinition fn)
         {
@@ -131,7 +128,7 @@ namespace Igs.Hcms.Tmpl
             }
         }
 
-        #endregion
+#endregion
 
         public bool IsDefined(string name)
         {
@@ -311,282 +308,282 @@ namespace Igs.Hcms.Tmpl
             IComparable c2;
 
             switch (exp.Operator) {
-            case Igs.Hcms.Tmpl.TokenKind.OpOr:
+                case Igs.Hcms.Tmpl.TokenKind.OpOr:
 
-                lhsValue = EvalExpression(exp.Lhs);
+                    lhsValue = EvalExpression(exp.Lhs);
 
-                if (Util.ToBoolean(lhsValue)) {
-                    return true;
-                }
+                    if (Util.ToBoolean(lhsValue)) {
+                        return true;
+                    }
 
-                rhsValue = EvalExpression(exp.Rhs);
-                return Util.ToBoolean(rhsValue);
+                    rhsValue = EvalExpression(exp.Rhs);
+                    return Util.ToBoolean(rhsValue);
 
-            case Igs.Hcms.Tmpl.TokenKind.OpLet:
+                case Igs.Hcms.Tmpl.TokenKind.OpLet:
 
-                lhsValue = exp.Lhs;
+                    lhsValue = exp.Lhs;
 
-                if (exp.Lhs is Name) {
-                    string _Name = ((Name) exp.Lhs).Id;
-                    rhsValue     = EvalExpression(exp.Rhs);
-                    this.SetValue(_Name, rhsValue);
-                    return string.Empty;
+                    if (exp.Lhs is Name) {
+                        string _Name = ((Name) exp.Lhs).Id;
+                        rhsValue     = EvalExpression(exp.Rhs);
+                        this.SetValue(_Name, rhsValue);
+                        return string.Empty;
 
-                } else if (exp.Lhs is FieldAccess) {
+                    } else if (exp.Lhs is FieldAccess) {
 
-                    FieldAccess fa      = (FieldAccess)exp.Lhs;
-                    rhsValue            = EvalExpression(exp.Rhs);
-                    object obj          = EvalExpression(fa.Exp);
-                    string propertyName = fa.Field;
+                        FieldAccess fa      = (FieldAccess)exp.Lhs;
+                        rhsValue            = EvalExpression(exp.Rhs);
+                        object obj          = EvalExpression(fa.Exp);
+                        string propertyName = fa.Field;
 
-                    setProperty(obj, propertyName, rhsValue);
+                        setProperty(obj, propertyName, rhsValue);
 
-                    return string.Empty;
+                        return string.Empty;
 
-                } else {
-                    throw new TmplException("variable name." + lhsValue.ToString(), exp.Line, exp.Col);
-                }
+                    } else {
+                        throw new TmplException("variable name." + lhsValue.ToString(), exp.Line, exp.Col);
+                    }
 
-            case Igs.Hcms.Tmpl.TokenKind.OpAnd:
+                case Igs.Hcms.Tmpl.TokenKind.OpAnd:
 
-                lhsValue = EvalExpression(exp.Lhs);
+                    lhsValue = EvalExpression(exp.Lhs);
 
-                if (!Util.ToBoolean(lhsValue)) {
-                    return false;
-                }
+                    if (!Util.ToBoolean(lhsValue)) {
+                        return false;
+                    }
 
-                rhsValue = EvalExpression(exp.Rhs);
-                return Util.ToBoolean(rhsValue);
+                    rhsValue = EvalExpression(exp.Rhs);
+                    return Util.ToBoolean(rhsValue);
 
-            case Igs.Hcms.Tmpl.TokenKind.OpIs:
+                case Igs.Hcms.Tmpl.TokenKind.OpIs:
 
-                lhsValue = EvalExpression(exp.Lhs);
-                rhsValue = EvalExpression(exp.Rhs);
+                    lhsValue = EvalExpression(exp.Lhs);
+                    rhsValue = EvalExpression(exp.Rhs);
 
-                c1 = lhsValue as IComparable;
-                c2 = rhsValue as IComparable;
+                    c1 = lhsValue as IComparable;
+                    c2 = rhsValue as IComparable;
 
-                if (c1 == null && c2 == null) {
-                    return null;
-                } else if (c1 == null || c2 == null) {
-                    return false;
-                } else if (lhsValue is int && rhsValue is int) {
-                    return (int)lhsValue == (int)rhsValue;
-                } else if (lhsValue is double && rhsValue is double) {
-                    return (double)lhsValue == (double)rhsValue;
-                } else if (lhsValue is int && rhsValue is double) {
-                    return (int)lhsValue == (double)rhsValue;
-                } else if (lhsValue is double && rhsValue is int) {
-                    return (double)lhsValue == (int)rhsValue;
-                } else if (lhsValue is string && rhsValue is string) {
-                    return lhsValue.ToString() == rhsValue.ToString();
-                } else {
-                    return c1.CompareTo(c2) == 0;
-                }
+                    if (c1 == null && c2 == null) {
+                        return null;
+                    } else if (c1 == null || c2 == null) {
+                        return false;
+                    } else if (lhsValue is int && rhsValue is int) {
+                        return (int)lhsValue == (int)rhsValue;
+                    } else if (lhsValue is double && rhsValue is double) {
+                        return (double)lhsValue == (double)rhsValue;
+                    } else if (lhsValue is int && rhsValue is double) {
+                        return (int)lhsValue == (double)rhsValue;
+                    } else if (lhsValue is double && rhsValue is int) {
+                        return (double)lhsValue == (int)rhsValue;
+                    } else if (lhsValue is string && rhsValue is string) {
+                        return lhsValue.ToString() == rhsValue.ToString();
+                    } else {
+                        return c1.CompareTo(c2) == 0;
+                    }
 
-            case Igs.Hcms.Tmpl.TokenKind.OpIsNot:
+                case Igs.Hcms.Tmpl.TokenKind.OpIsNot:
 
-                lhsValue = EvalExpression(exp.Lhs);
-                rhsValue = EvalExpression(exp.Rhs);
+                    lhsValue = EvalExpression(exp.Lhs);
+                    rhsValue = EvalExpression(exp.Rhs);
 
-                return !lhsValue.Equals(rhsValue);
+                    return !lhsValue.Equals(rhsValue);
 
-            case Igs.Hcms.Tmpl.TokenKind.OpGt:
+                case Igs.Hcms.Tmpl.TokenKind.OpGt:
 
-                lhsValue = EvalExpression(exp.Lhs);
-                rhsValue = EvalExpression(exp.Rhs);
+                    lhsValue = EvalExpression(exp.Lhs);
+                    rhsValue = EvalExpression(exp.Rhs);
 
-                c1 = lhsValue as IComparable;
-                c2 = rhsValue as IComparable;
+                    c1 = lhsValue as IComparable;
+                    c2 = rhsValue as IComparable;
 
-                if (c1 == null || c2 == null) {
-                    return false;
-                } else {
-                    return c1.CompareTo(c2) == 1;
-                }
+                    if (c1 == null || c2 == null) {
+                        return false;
+                    } else {
+                        return c1.CompareTo(c2) == 1;
+                    }
 
-            case Igs.Hcms.Tmpl.TokenKind.OpAdd:
+                case Igs.Hcms.Tmpl.TokenKind.OpAdd:
 
-                lhsValue = EvalExpression(exp.Lhs);
-                rhsValue = EvalExpression(exp.Rhs);
+                    lhsValue = EvalExpression(exp.Lhs);
+                    rhsValue = EvalExpression(exp.Rhs);
 
-                if (lhsValue == null || rhsValue == null) {
-                    return null;
-                } else if (lhsValue is int && rhsValue is int) {
-                    return (int)lhsValue + (int)rhsValue;
-                } else if (lhsValue is double && rhsValue is double) {
-                    return (double)lhsValue + (double)rhsValue;
-                } else if (lhsValue is int && rhsValue is double) {
-                    return (int)lhsValue + (double)rhsValue;
-                } else if (lhsValue is double && rhsValue is int) {
-                    return (double)lhsValue + (int)rhsValue;
-                } else if (lhsValue is string || rhsValue is string) {
-                    return lhsValue.ToString() + rhsValue.ToString();
-                } else {
-                    return Convert.ToDouble(lhsValue) + Convert.ToDouble(rhsValue);
-                }
+                    if (lhsValue == null || rhsValue == null) {
+                        return null;
+                    } else if (lhsValue is int && rhsValue is int) {
+                        return (int)lhsValue + (int)rhsValue;
+                    } else if (lhsValue is double && rhsValue is double) {
+                        return (double)lhsValue + (double)rhsValue;
+                    } else if (lhsValue is int && rhsValue is double) {
+                        return (int)lhsValue + (double)rhsValue;
+                    } else if (lhsValue is double && rhsValue is int) {
+                        return (double)lhsValue + (int)rhsValue;
+                    } else if (lhsValue is string || rhsValue is string) {
+                        return lhsValue.ToString() + rhsValue.ToString();
+                    } else {
+                        return Convert.ToDouble(lhsValue) + Convert.ToDouble(rhsValue);
+                    }
 
-            case Igs.Hcms.Tmpl.TokenKind.OpConcat:
+                case Igs.Hcms.Tmpl.TokenKind.OpConcat:
 
-                lhsValue = EvalExpression(exp.Lhs);
-                rhsValue = EvalExpression(exp.Rhs);
+                    lhsValue = EvalExpression(exp.Lhs);
+                    rhsValue = EvalExpression(exp.Rhs);
 
-                if (lhsValue == null || rhsValue == null) {
-                    return null;
-                } else {
-                    return lhsValue.ToString() + rhsValue.ToString();
-                }
+                    if (lhsValue == null || rhsValue == null) {
+                        return null;
+                    } else {
+                        return lhsValue.ToString() + rhsValue.ToString();
+                    }
 
-            case Igs.Hcms.Tmpl.TokenKind.OpMul:
+                case Igs.Hcms.Tmpl.TokenKind.OpMul:
 
-                lhsValue = EvalExpression(exp.Lhs);
-                rhsValue = EvalExpression(exp.Rhs);
+                    lhsValue = EvalExpression(exp.Lhs);
+                    rhsValue = EvalExpression(exp.Rhs);
 
-                if (lhsValue == null || rhsValue == null) {
-                    return null;
-                } else if (lhsValue is int && rhsValue is int) {
-                    return (int)lhsValue * (int)rhsValue;
-                } else if (lhsValue is double && rhsValue is double) {
-                    return (double)lhsValue * (double)rhsValue;
-                } else if (lhsValue is int && rhsValue is double) {
-                    return (int)lhsValue * (double)rhsValue;
-                } else if (lhsValue is double && rhsValue is int) {
-                    return (double)lhsValue * (int)rhsValue;
-                } else {
-                    return Convert.ToDouble(lhsValue) * Convert.ToDouble(rhsValue);
-                }
+                    if (lhsValue == null || rhsValue == null) {
+                        return null;
+                    } else if (lhsValue is int && rhsValue is int) {
+                        return (int)lhsValue * (int)rhsValue;
+                    } else if (lhsValue is double && rhsValue is double) {
+                        return (double)lhsValue * (double)rhsValue;
+                    } else if (lhsValue is int && rhsValue is double) {
+                        return (int)lhsValue * (double)rhsValue;
+                    } else if (lhsValue is double && rhsValue is int) {
+                        return (double)lhsValue * (int)rhsValue;
+                    } else {
+                        return Convert.ToDouble(lhsValue) * Convert.ToDouble(rhsValue);
+                    }
 
-            case Igs.Hcms.Tmpl.TokenKind.OpDiv:
+                case Igs.Hcms.Tmpl.TokenKind.OpDiv:
 
-                lhsValue = EvalExpression(exp.Lhs);
-                rhsValue = EvalExpression(exp.Rhs);
+                    lhsValue = EvalExpression(exp.Lhs);
+                    rhsValue = EvalExpression(exp.Rhs);
 
-                if (lhsValue == null || rhsValue == null) {
-                    return null;
-                } else if (lhsValue is int && rhsValue is int) {
-                    return (int)lhsValue / (int)rhsValue;
-                } else if (lhsValue is double && rhsValue is double) {
-                    return (double)lhsValue / (double)rhsValue;
-                } else if (lhsValue is int && rhsValue is double) {
-                    return (int)lhsValue / (double)rhsValue;
-                } else if (lhsValue is double && rhsValue is int) {
-                    return (double)lhsValue / (int)rhsValue;
-                } else {
-                    return Convert.ToDouble(lhsValue) / Convert.ToDouble(rhsValue);
-                }
+                    if (lhsValue == null || rhsValue == null) {
+                        return null;
+                    } else if (lhsValue is int && rhsValue is int) {
+                        return (int)lhsValue / (int)rhsValue;
+                    } else if (lhsValue is double && rhsValue is double) {
+                        return (double)lhsValue / (double)rhsValue;
+                    } else if (lhsValue is int && rhsValue is double) {
+                        return (int)lhsValue / (double)rhsValue;
+                    } else if (lhsValue is double && rhsValue is int) {
+                        return (double)lhsValue / (int)rhsValue;
+                    } else {
+                        return Convert.ToDouble(lhsValue) / Convert.ToDouble(rhsValue);
+                    }
 
-            case Igs.Hcms.Tmpl.TokenKind.OpMod:
+                case Igs.Hcms.Tmpl.TokenKind.OpMod:
 
-                lhsValue = EvalExpression(exp.Lhs);
-                rhsValue = EvalExpression(exp.Rhs);
+                    lhsValue = EvalExpression(exp.Lhs);
+                    rhsValue = EvalExpression(exp.Rhs);
 
-                if (lhsValue == null || rhsValue == null) {
-                    return null;
-                } else if (lhsValue is int && rhsValue is int) {
-                    return (int)lhsValue % (int)rhsValue;
-                } else if (lhsValue is double && rhsValue is double) {
-                    return (double)lhsValue % (double)rhsValue;
-                } else if (lhsValue is int && rhsValue is double) {
-                    return (int)lhsValue % (double)rhsValue;
-                } else if (lhsValue is double && rhsValue is int) {
-                    return (double)lhsValue % (int)rhsValue;
-                } else {
-                    return Convert.ToDouble(lhsValue) % Convert.ToDouble(rhsValue);
-                }
+                    if (lhsValue == null || rhsValue == null) {
+                        return null;
+                    } else if (lhsValue is int && rhsValue is int) {
+                        return (int)lhsValue % (int)rhsValue;
+                    } else if (lhsValue is double && rhsValue is double) {
+                        return (double)lhsValue % (double)rhsValue;
+                    } else if (lhsValue is int && rhsValue is double) {
+                        return (int)lhsValue % (double)rhsValue;
+                    } else if (lhsValue is double && rhsValue is int) {
+                        return (double)lhsValue % (int)rhsValue;
+                    } else {
+                        return Convert.ToDouble(lhsValue) % Convert.ToDouble(rhsValue);
+                    }
 
-            case Igs.Hcms.Tmpl.TokenKind.OpPow:
+                case Igs.Hcms.Tmpl.TokenKind.OpPow:
 
-                lhsValue = EvalExpression(exp.Lhs);
-                rhsValue = EvalExpression(exp.Rhs);
+                    lhsValue = EvalExpression(exp.Lhs);
+                    rhsValue = EvalExpression(exp.Rhs);
 
-                if (lhsValue == null || rhsValue == null) {
-                    return null;
-                } else if (lhsValue is int && rhsValue is int) {
-                    return Math.Pow((int)lhsValue , (int)rhsValue);
-                } else if (lhsValue is double && rhsValue is double) {
-                    return Math.Pow((double)lhsValue , (double)rhsValue);
-                } else if (lhsValue is int && rhsValue is double) {
-                    return Math.Pow((int)lhsValue , (double)rhsValue);
-                } else if (lhsValue is double && rhsValue is int) {
-                    return Math.Pow((double)lhsValue , (int)rhsValue);
-                } else {
-                    return Math.Pow(Convert.ToDouble(lhsValue) , Convert.ToDouble(rhsValue));
-                }
+                    if (lhsValue == null || rhsValue == null) {
+                        return null;
+                    } else if (lhsValue is int && rhsValue is int) {
+                        return Math.Pow((int)lhsValue , (int)rhsValue);
+                    } else if (lhsValue is double && rhsValue is double) {
+                        return Math.Pow((double)lhsValue , (double)rhsValue);
+                    } else if (lhsValue is int && rhsValue is double) {
+                        return Math.Pow((int)lhsValue , (double)rhsValue);
+                    } else if (lhsValue is double && rhsValue is int) {
+                        return Math.Pow((double)lhsValue , (int)rhsValue);
+                    } else {
+                        return Math.Pow(Convert.ToDouble(lhsValue) , Convert.ToDouble(rhsValue));
+                    }
 
-            case Igs.Hcms.Tmpl.TokenKind.OpLt:
+                case Igs.Hcms.Tmpl.TokenKind.OpLt:
 
-                lhsValue = EvalExpression(exp.Lhs);
-                rhsValue = EvalExpression(exp.Rhs);
+                    lhsValue = EvalExpression(exp.Lhs);
+                    rhsValue = EvalExpression(exp.Rhs);
 
-                c1 = lhsValue as IComparable;
-                c2 = rhsValue as IComparable;
+                    c1 = lhsValue as IComparable;
+                    c2 = rhsValue as IComparable;
 
-                if (c1 == null && c2 == null) {
-                    return false;
-                } else if (c1 == null || c2 == null) {
-                    return false;
-                } else if (lhsValue is int && rhsValue is int) {
-                    return (int)lhsValue < (int)rhsValue;
-                } else if (lhsValue is double && rhsValue is double) {
-                    return (double)lhsValue < (double)rhsValue;
-                } else if (lhsValue is int && rhsValue is double) {
-                    return (int)lhsValue < (double)rhsValue;
-                } else if (lhsValue is double && rhsValue is int) {
-                    return (double)lhsValue < (int)rhsValue;
-                } else {
-                    return c1.CompareTo(c2) == -1;
-                }
+                    if (c1 == null && c2 == null) {
+                        return false;
+                    } else if (c1 == null || c2 == null) {
+                        return false;
+                    } else if (lhsValue is int && rhsValue is int) {
+                        return (int)lhsValue < (int)rhsValue;
+                    } else if (lhsValue is double && rhsValue is double) {
+                        return (double)lhsValue < (double)rhsValue;
+                    } else if (lhsValue is int && rhsValue is double) {
+                        return (int)lhsValue < (double)rhsValue;
+                    } else if (lhsValue is double && rhsValue is int) {
+                        return (double)lhsValue < (int)rhsValue;
+                    } else {
+                        return c1.CompareTo(c2) == -1;
+                    }
 
-            case Igs.Hcms.Tmpl.TokenKind.OpGte:
+                case Igs.Hcms.Tmpl.TokenKind.OpGte:
 
-                lhsValue = EvalExpression(exp.Lhs);
-                rhsValue = EvalExpression(exp.Rhs);
+                    lhsValue = EvalExpression(exp.Lhs);
+                    rhsValue = EvalExpression(exp.Rhs);
 
-                c1 = lhsValue as IComparable;
-                c2 = rhsValue as IComparable;
+                    c1 = lhsValue as IComparable;
+                    c2 = rhsValue as IComparable;
 
-                if (c1 == null && c2 == null) {
-                    return false;
-                } else if (c1 == null || c2 == null) {
-                    return false;
-                } else if (lhsValue is int && rhsValue is int) {
-                    return (int)lhsValue >= (int)rhsValue;
-                } else if (lhsValue is double && rhsValue is double) {
-                    return (double)lhsValue >= (double)rhsValue;
-                } else if (lhsValue is int && rhsValue is double) {
-                    return (int)lhsValue >= (double)rhsValue;
-                } else if (lhsValue is double && rhsValue is int) {
-                    return (double)lhsValue >= (int)rhsValue;
-                } else {
-                    return c1.CompareTo(c2) >= 0;
-                }
+                    if (c1 == null && c2 == null) {
+                        return false;
+                    } else if (c1 == null || c2 == null) {
+                        return false;
+                    } else if (lhsValue is int && rhsValue is int) {
+                        return (int)lhsValue >= (int)rhsValue;
+                    } else if (lhsValue is double && rhsValue is double) {
+                        return (double)lhsValue >= (double)rhsValue;
+                    } else if (lhsValue is int && rhsValue is double) {
+                        return (int)lhsValue >= (double)rhsValue;
+                    } else if (lhsValue is double && rhsValue is int) {
+                        return (double)lhsValue >= (int)rhsValue;
+                    } else {
+                        return c1.CompareTo(c2) >= 0;
+                    }
 
-            case Igs.Hcms.Tmpl.TokenKind.OpLte:
+                case Igs.Hcms.Tmpl.TokenKind.OpLte:
 
-                lhsValue = EvalExpression(exp.Lhs);
-                rhsValue = EvalExpression(exp.Rhs);
+                    lhsValue = EvalExpression(exp.Lhs);
+                    rhsValue = EvalExpression(exp.Rhs);
 
-                c1 = lhsValue as IComparable;
-                c2 = rhsValue as IComparable;
+                    c1 = lhsValue as IComparable;
+                    c2 = rhsValue as IComparable;
 
-                if (c1 == null && c2 == null) {
-                    return false;
-                } else if (c1 == null || c2 == null) {
-                    return false;
-                } else if (lhsValue is int && rhsValue is int) {
-                    return (int)lhsValue <= (int)rhsValue;
-                } else if (lhsValue is double && rhsValue is double) {
-                    return (double)lhsValue <= (double)rhsValue;
-                } else if (lhsValue is int && rhsValue is double) {
-                    return (int)lhsValue <= (double)rhsValue;
-                } else if (lhsValue is double && rhsValue is int) {
-                    return (double)lhsValue <= (int)rhsValue;
-                } else {
-                    return c1.CompareTo(c2) <= 0;
-                }
+                    if (c1 == null && c2 == null) {
+                        return false;
+                    } else if (c1 == null || c2 == null) {
+                        return false;
+                    } else if (lhsValue is int && rhsValue is int) {
+                        return (int)lhsValue <= (int)rhsValue;
+                    } else if (lhsValue is double && rhsValue is double) {
+                        return (double)lhsValue <= (double)rhsValue;
+                    } else if (lhsValue is int && rhsValue is double) {
+                        return (int)lhsValue <= (double)rhsValue;
+                    } else if (lhsValue is double && rhsValue is int) {
+                        return (double)lhsValue <= (int)rhsValue;
+                    } else {
+                        return c1.CompareTo(c2) <= 0;
+                    }
 
-            default:
-                throw new TmplException("Operator " + exp.Operator.ToString() + " is not supported.", exp.Line, exp.Col);
+                default:
+                    throw new TmplException("Operator " + exp.Operator.ToString() + " is not supported.", exp.Line, exp.Col);
             }
         }
 
@@ -726,29 +723,29 @@ namespace Igs.Hcms.Tmpl
 
             try {
                 switch (name) {
-                case "define":
-                    break;
+                    case "define":
+                        break;
 
-                case "else":
-                    ProcessElements(tag.InnerElements);
-                    break;
+                    case "else":
+                        ProcessElements(tag.InnerElements);
+                        break;
 
-                case "using":
-                    object val = EvalExpression(tag.AttributeValue("tmpl"));
-                    ProcessTmpl(val.ToString(), tag);
-                    break;
+                    case "using":
+                        object val = EvalExpression(tag.AttributeValue("tmpl"));
+                        ProcessTmpl(val.ToString(), tag);
+                        break;
 
-                case "foreach":
-                    ProcessForeach(tag);
-                    break;
+                    case "foreach":
+                        ProcessForeach(tag);
+                        break;
 
-                case "for":
-                    ProcessFor(tag);
-                    break;
+                    case "for":
+                        ProcessFor(tag);
+                        break;
 
-                default:
-                    ProcessTmpl(tag.Name, tag);
-                    break;
+                    default:
+                        ProcessTmpl(tag.Name, tag);
+                        break;
                 }
             } catch (TmplException ex) {
                 DisplayError(ex);

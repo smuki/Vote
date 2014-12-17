@@ -10,9 +10,9 @@ using System.Threading;
 namespace Igs.Hcms.Tmpl
 {
     public class Templates {
-        private static Dictionary<string, List<string>> _Regions = new Dictionary<string, List<string>>();
+        private Dictionary<string, List<string>> _Regions = new Dictionary<string, List<string>>();
 
-        private static object _PENDING = new object();
+        private object _PENDING = new object();
         private string _appPath        = "";
         private string _codePath       = "";
         private string _debugMode      = "N";
