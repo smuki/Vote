@@ -206,38 +206,11 @@
             private string[] strArray;
             private Thread th;
 
-            public IDataReader DataReader
-            {
-                get {
-                    return _DataReader;
-                } set {
-                    _DataReader = value;
-                }
-            }
-            public string EntityTypeHashCode
-            {
-                get {
-                    return this.entitykey;
-                } set {
-                    this.entitykey = value;
-                }
-            }
-            public string[] StrArray
-            {
-                get {
-                    return this.strArray;
-                } set {
-                    this.strArray = value;
-                }
-            }
-            public Thread Th
-            {
-                get {
-                    return this.th;
-                } set {
-                    this.th = value;
-                }
-            }
+            public IDataReader DataReader    { get { return _DataReader;    } set { _DataReader    = value; }  }
+            public string EntityTypeHashCode { get { return this.entitykey; } set { this.entitykey = value; }  }
+            public string[] StrArray         { get { return this.strArray;  } set { this.strArray  = value; }  }
+            public Thread Th                 { get { return this.th;        } set { this.th        = value; }  }
+
         }
     }
 #endif

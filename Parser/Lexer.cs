@@ -5,7 +5,7 @@ using System.IO;
 
 namespace Igs.Hcms.Tmpl
 {
-    internal  class Lexer {
+    internal class Lexer {
 
         enum LexMode {
             Text,
@@ -95,6 +95,14 @@ namespace Igs.Hcms.Tmpl
             } else {
                 return _data[_pos + count];
             }
+        }
+
+        private string TryRead(int count)
+        {
+            if (_pos+count >= _data.Length) {
+                count=count-(_pos+count-_data.Length);
+            }
+            return _data.Substring(_pos, count);
         }
 
         private void EatSpace()
@@ -616,40 +624,40 @@ namespace Igs.Hcms.Tmpl
                         eat_tag_start = 2;
                         _f_tag_start  = true;
 
-                    } else if ((LA(1) == 'd' || LA(1) == 'D') && (LA(2) == 'e' || LA(2) == 'E')  && (LA(3) == 'f' || LA(3) == 'F')  && (LA(4) == 'i' || LA(4) == 'I')  && (LA(5) == 'n' || LA(5) == 'N') && (LA(6) == 'e' || LA(6) == 'E') && (LA(7) == ' ')) {
+                    } else if (TryRead(8).ToLower() == "@define " ) {
                         _f_tag_start = true;
 
-                    } else if ((LA(1) == 'u' || LA(1) == 'U') && (LA(2) == 's' || LA(2) == 'S')   && (LA(3) == 'i' || LA(3) == 'I')  && (LA(4) == 'n' || LA(4) == 'N') && (LA(5) == 'g' || LA(5) == 'G') && (LA(6) == ' ')) {
+                    } else if (TryRead(7).ToLower() == "@using " ) {
                         _f_tag_start = true;
 
-
-                    } else if ((LA(1) == 'f' || LA(1) == 'F') && (LA(2) == 'o' || LA(2) == 'O') && (LA(3) == 'r' || LA(3) == 'R') && (LA(4) == ' ')) {
+                    } else if (TryRead(5).ToLower() == "@for " ) {
                         _f_tag_start = true;
 
-                    } else if ((LA(1) == 'i' || LA(1) == 'I')  && (LA(2) == 'f' || LA(2) == 'F') && (LA(3) == ' ')) {
+                    } else if (TryRead(4).ToLower() == "@if " ) {
                         _f_tag_start = true;
-                    } else if ((LA(1) == 'f' || LA(1) == 'F')  && (LA(2) == 'o' || LA(2) == 'O')  && (LA(3) == 'r' || LA(3) == 'R')  && (LA(4) == 'e' || LA(4) == 'E')  && (LA(5) == 'a' || LA(5) == 'A')  && (LA(6) == 'c' || LA(6) == 'C')  && (LA(7) == 'h' || LA(7) == 'H')  && (LA(8) == ' ')) {
+                    } else if (TryRead(9).ToLower() == "@foreach " ) {
                         _f_tag_start = true;
-                    } else if ((LA(1) == 'e' || LA(1) == 'E') && (LA(2) == 'l' || LA(2) == 'L')  && (LA(3) == 's' || LA(3) == 'S')  && (LA(4) == 'e' || LA(4) == 'E')) {
+                    } else if (TryRead(5).ToLower() == "@else" ) {
                         _f_tag_start = true;
                     }
                 } else if (LA(0) == '~') {
-                    if ((LA(1) == 'i' || LA(1) == 'I')  && (LA(2) == 'f' || LA(2) == 'F') && (LA(3) == ' ')) {
+
+                    if (TryRead(4).ToLower() == "~if " ) {
 
                         _f_tag_end = true;
 
-                    } else if ((LA(1) == 'f' || LA(1) == 'F')  && (LA(2) == 'o' || LA(2) == 'O')  && (LA(3) == 'r' || LA(3) == 'R')  && (LA(4) == 'e' || LA(4) == 'E')  && (LA(5) == 'a' || LA(5) == 'A')  && (LA(6) == 'c' || LA(6) == 'C')  && (LA(7) == 'h' || LA(7) == 'H')  && (LA(8) == ' ')) {
+                    } else if (TryRead(9).ToLower() == "~foreach " ) {
 
                         _f_tag_end = true;
-                    } else if ((LA(1) == 'f' || LA(1) == 'F')  && (LA(2) == 'o' || LA(2) == 'O')  && (LA(3) == 'r' || LA(3) == 'R')  && (LA(4) == ' ')) {
-
-                        _f_tag_end = true;
-
-                    } else if ((LA(1) == 'd' || LA(1) == 'D')  && (LA(2) == 'e' || LA(2) == 'E')   && (LA(3) == 'f' || LA(3) == 'F')  && (LA(4) == 'i' || LA(4) == 'I')  && (LA(5) == 'n' || LA(5) == 'N') && (LA(6) == 'e' || LA(6) == 'E')  && (LA(7) == ' ')) {
+                    } else if (TryRead(5).ToLower() == "~for " ) {
 
                         _f_tag_end = true;
 
-                    } else if ((LA(1) == 'u' || LA(1) == 'U') && (LA(2) == 's' || LA(2) == 'S')   && (LA(3) == 'i' || LA(3) == 'I')  && (LA(4) == 'n' || LA(4) == 'N') && (LA(5) == 'g' || LA(5) == 'G') && (LA(6) == ' ')) {
+                    } else if (TryRead(8).ToLower() == "~define " ) {
+
+                        _f_tag_end = true;
+
+                    } else if (TryRead(7).ToLower() == "~using " ) {
 
                         _f_tag_end = true;
 
@@ -659,7 +667,7 @@ namespace Igs.Hcms.Tmpl
                     if (LA(1) == '~') {
                         eat_tag_end = 2;
                         _f_tag_end = true;
-                    } else if (LA(1) == '@' && (LA(2) == 'e' || LA(2) == 'E') && (LA(3) == 'l' || LA(3) == 'L')  && (LA(4) == 's' || LA(4) == 'S')  && (LA(5) == 'e' || LA(5) == 'E')) {
+                    } else if (TryRead(6).ToLower() == "}@else" ) {
                         eat_tag_start = 2;
                         _f_tag_start = true;
 
@@ -707,6 +715,7 @@ namespace Igs.Hcms.Tmpl
 
             return CreateToken(TokenKind.TextData);
         }
+
 
         private Token ReadId()
         {

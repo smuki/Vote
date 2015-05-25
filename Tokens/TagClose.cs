@@ -6,11 +6,10 @@ using System.Text;
 
 namespace Igs.Hcms.Tmpl.Elements
 {
-    public class StatementClose : Element {
+    public class StatementClose : Token {
         private string name;
 
-        public StatementClose(int line, int col, string name)
-        : base(line, col)
+        public StatementClose(int line, int col, string name) : base(line, col)
         {
             this.name = name;
         }

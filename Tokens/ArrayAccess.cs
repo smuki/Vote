@@ -17,19 +17,8 @@ namespace Igs.Hcms.Tmpl.Elements
             _index = index;
         }
 
-        public Expression Exp
-        {
-            get {
-                return _exp;
-            }
-        }
-
-        public Expression Index
-        {
-            get {
-                return _index;
-            }
-        }
+        public Expression Exp   { get { return _exp;   }  }
+        public Expression Index { get { return _index; }  }
 
     }
 }

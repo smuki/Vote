@@ -6,11 +6,10 @@ using System.Text;
 
 namespace Igs.Hcms.Tmpl.Elements
 {
-    internal  class Text : Element {
+    internal  class Text : Token {
         private string data;
 
-        public Text(int line, int col, string data)
-        : base(line, col)
+        public Text(int line, int col, string data) : base(line, col)
         {
             this.data = data;
         }

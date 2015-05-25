@@ -11,12 +11,12 @@ namespace Igs.Hcms.Tmpl
 {
     public class Tmpl {
         private string name;
-        private List<Element> elements;
+        private List<Token> elements;
         private Tmpl parent;
         private Dictionary<string, Tmpl> tmpls;
 
         private StringWriter writer;
-        public Tmpl(string name, List<Element> elements)
+        public Tmpl(string name, List<Token> elements)
         {
             this.name = name;
             this.elements = elements;
@@ -25,7 +25,7 @@ namespace Igs.Hcms.Tmpl
             InitTmpls();
         }
 
-        public Tmpl(string name, List<Element> elements, Tmpl parent)
+        public Tmpl(string name, List<Token> elements, Tmpl parent)
         {
             this.name = name;
             this.elements = elements;
@@ -44,7 +44,7 @@ namespace Igs.Hcms.Tmpl
         }
 
         ///======================================================================
-        private void visitElement(Element elem)
+        private void visitElement(Token elem)
         {
             if (elem is Expression)
                 visitExpression((Expression) elem);
@@ -57,7 +57,7 @@ namespace Igs.Hcms.Tmpl
             else if (elem is StatementClose)
                 visitTagClose((StatementClose) elem);
             else
-                WriteLine("Unknown Element: " + elem.GetType().ToString());
+                WriteLine("Unknown Token: " + elem.GetType().ToString());
         }
 
         private void visitExpression(Expression expression)
@@ -138,7 +138,7 @@ namespace Igs.Hcms.Tmpl
 
             AddAttribs(tag.Attributes);
 
-            foreach (Element elem in tag.InnerElements) {
+            foreach (Token elem in tag.InnerElements) {
                 visitElement(elem);
             }
         }
@@ -150,7 +150,7 @@ namespace Igs.Hcms.Tmpl
 
             AddAttribs(tag.Attributes);
 
-            foreach (Element elem in tag.InnerElements) {
+            foreach (Token elem in tag.InnerElements) {
                 visitElement(elem);
             }
 
@@ -175,7 +175,7 @@ namespace Igs.Hcms.Tmpl
 
             writer = new StringWriter();
 
-            foreach (Element elem in elements) {
+            foreach (Token elem in elements) {
                 visitElement(elem);
                 WriteLine("");
             }
@@ -191,7 +191,7 @@ namespace Igs.Hcms.Tmpl
         {
             this.tmpls = new Dictionary<string, Tmpl> (StringComparer.InvariantCultureIgnoreCase);
 
-            foreach (Element elem in elements) {
+            foreach (Token elem in elements) {
                 if (elem is Tag) {
                     Tag tag = (Tag) elem;
 
@@ -212,7 +212,7 @@ namespace Igs.Hcms.Tmpl
             }
         }
 
-        public List<Element> Elements
+        public List<Token> Elements
         {
             get {
                 return this.elements;

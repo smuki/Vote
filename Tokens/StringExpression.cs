@@ -9,8 +9,7 @@ namespace Igs.Hcms.Tmpl.Elements
     internal class StringExpression : Expression {
         private List<Expression> exps;
 
-        public StringExpression(int line, int col)
-        : base(line, col)
+        public StringExpression(int line, int col) : base(line, col)
         {
             exps = new List<Expression>();
         }

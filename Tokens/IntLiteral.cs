@@ -14,12 +14,7 @@ namespace Igs.Hcms.Tmpl.Elements
             this.value = value;
         }
 
-        public int Value
-        {
-            get {
-                return this.value;
-            }
-        }
+        public int Value { get { return this.value; } }
 
     }
 }

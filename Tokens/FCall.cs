@@ -11,26 +11,14 @@ namespace Igs.Hcms.Tmpl.Elements
         private string name;
         private Expression[] args;
 
-        public FCall(int line, int col, string name, Expression[] args)
-        : base(line, col)
+        public FCall(int line, int col, string name, Expression[] args) : base(line, col)
         {
             this.name = name;
             this.args = args;
         }
 
-        public Expression[] Args
-        {
-            get {
-                return this.args;
-            }
-        }
-
-        public string Name
-        {
-            get {
-                return this.name;
-            }
-        }
+        public Expression[] Args { get { return this.args;  }  }
+        public string Name       { get { return this.name;  }  }
 
     }
 }

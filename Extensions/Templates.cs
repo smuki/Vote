@@ -12,29 +12,70 @@ namespace Igs.Hcms.Tmpl
     public class Templates {
         private Dictionary<string, List<string>> _Regions = new Dictionary<string, List<string>>();
 
-        private object _PENDING = new object();
-        private string _appPath        = "";
-        private string _codePath       = "";
-        private string _debugMode      = "N";
-        private string _regionPath     = @"{AppPath}\code;{AppPath}\template;{AppPath}";
-        private string _Extensions     = ".tpl;.cs";
+        private object _PENDING    = new object();
+        private string _appPath    = "";
+        private string _codePath   = "";
+        private string _debugMode  = "N";
+        private string _regionPath = @"{AppPath}\code;{AppPath}\template;{AppPath}";
+        private string _Extensions = ".tpl;.cs";
 
-        public string CodePath
+        public string CodePath  { get { return _codePath;  } set { _codePath  = value; }  }
+        public string DebugMode { get { return _debugMode; } set { _debugMode = value; }  }
+
+        public string KeepSingleEmptyLine(string data)
         {
-            get {
-                return _codePath;
-            } set {
-                _codePath = value;
+
+            data = data.Replace("\r", "\n");
+            data = data.Replace("\n\n", "\n");
+
+            StringBuilder _Data = new StringBuilder();
+
+            bool isblank = false;
+
+            foreach (string _s in data.Split('\n')) {
+                if (string.IsNullOrEmpty(_s.Trim())) {
+                    if (!isblank) {
+                        _Data.Append("\n");
+                    }
+
+                    isblank = true;
+                } else {
+                    isblank = false;
+                    _Data.Append(_s);
+                    _Data.Append("\n");
+                }
             }
+
+            return _Data.ToString();
         }
 
-        public string DebugMode
+        public string PolicyTemplate(string UID_CODE, string sTrigger)
         {
-            get {
-                return _debugMode;
-            } set {
-                _debugMode = value;
+
+            string _ss;
+            string fileName = "";
+
+            foreach (string _path in(_regionPath + ";" + _codePath).Split(';')) {
+                if (!string.IsNullOrEmpty(_path)) {
+                    string spath = _path.Replace("{AppPath}", _appPath);
+                    spath = spath.Trim('\\') + "\\";
+
+                    if (Directory.Exists(spath)) {
+
+                        foreach (string _Extension in _Extensions.Split(';')) {
+                            if (File.Exists(spath + "N_R_Template" + _Extension)) {
+                                fileName = spath + "N_R_Template" + _Extension;
+                            }
+                        }
+                    }
+                }
             }
+            using(StreamReader sr = new StreamReader(fileName, System.Text.Encoding.Default)) {
+                _ss = sr.ReadToEnd();
+            }
+            _ss = _ss.Replace("{sTrigger}", sTrigger);
+            _ss = _ss.Replace("{UID_CODE}", UID_CODE);
+            return _ss;
         }
 
         public string Template(string cUID_CODE, string cFileName)
@@ -53,19 +94,22 @@ namespace Igs.Hcms.Tmpl
                     string _ss;
 
                     while ((_ss = sr.ReadLine()) != null) {
-                        string _s=_ss;
-                        if (_script && _s.Trim()!="" && !((_s.Trim().IndexOf("@")==0 && _s.IndexOf("@@")<0) || _s.Trim().IndexOf("}~")==0)) {
-                            _s="${"+_s+"}";
+                        string _s = _ss;
+
+                        if (_script && _s.Trim() != "" && !((_s.Trim().IndexOf("@") == 0 && _s.IndexOf("@@") < 0) || _s.Trim().IndexOf("}~") == 0)) {
+                            _s = "${" + _s + "}";
                         }
-                        if (_line<=5) {
-                            if (_ss.IndexOf("@script")<0) {
+
+                        if (_line <= 5) {
+                            if (_ss.IndexOf("@script") < 0) {
                                 _Data.Add(_s);
-                            }else{
-                                _script=true;
+                            } else {
+                                _script = true;
                             }
-                        }else{
+                        } else {
                             _Data.Add(_s);
                         }
+
                         _line++;
                     }
                 }
@@ -101,7 +145,15 @@ namespace Igs.Hcms.Tmpl
             int _aft_position = _data.IndexOf("}", _bef_position);
 
             if (_bef_position >= 2 && _aft_position > 0) {
-                return _data.Substring(_bef_position, _aft_position - _bef_position);
+                string s = _data.Substring(_bef_position, _aft_position - _bef_position);
+
+                if (s.IndexOf("&") >= 0) {
+                    StreamWriter _File = new StreamWriter("Rules.ini", true);
+                    _File.WriteLine(cUID_CODE + "|" + s);
+                    _File.Close();
+                }
+
+                return s;
             } else {
                 return "";
             }
@@ -116,6 +168,11 @@ namespace Igs.Hcms.Tmpl
                 string _RegionName = getRegionName(cUID_CODE, ss);
 
                 if (_RegionName != "") {
+                    bool Policy = _RegionName.IndexOf("&") >= 0;
+
+                    if (Policy) {
+                        _RegionName = _RegionName.Replace("&", "");
+                    }
 
                     string _UID_CODE = cUID_CODE;
                     int    _position = _RegionName.IndexOf(".");
@@ -125,7 +182,6 @@ namespace Igs.Hcms.Tmpl
                         _RegionName = _RegionName.Substring(_position + 1, _RegionName.Length - _position - 1);
                         _RegionName = _RegionName.ToUpper();
                     }
-
 
                     List<string> _X_Region_Code = this.getRegion(_UID_CODE, _RegionName);
 
@@ -156,6 +212,10 @@ namespace Igs.Hcms.Tmpl
 
                             _end_line++;
                         }
+                    }
+
+                    if (Policy) {
+                        _Data.AppendLine(PolicyTemplate(_UID_CODE, _RegionName));
                     }
 
                     if (DebugMode == "Y" && _UID_CODE.ToLower() != "include" && _RegionName.ToLower() != "init_X_Codetdriver") {
@@ -238,6 +298,12 @@ namespace Igs.Hcms.Tmpl
 
                                     if (_t_name != "") {
 
+                                        bool Policy = _RegionName.IndexOf("&") >= 0;
+
+                                        if (Policy) {
+                                            _RegionName = _RegionName.Replace("&", "");
+                                        }
+
                                         string _UID_CODE = cUID_CODE;
                                         int _position    = _t_name.IndexOf(".");
 
@@ -286,6 +352,10 @@ namespace Igs.Hcms.Tmpl
                                                 }
 
                                                 _end_line++;
+                                            }
+
+                                            if (Policy) {
+                                                _Region_Data.Add(PolicyTemplate(_UID_CODE, _RegionName));
                                             }
 
                                             if (DebugMode == "Y") {

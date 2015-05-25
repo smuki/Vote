@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Igs.Hcms.Tmpl.Elements
 {
-    public abstract class Expression : Element {
+    public abstract class Expression : Token {
         public Expression(int line, int col)
         : base(line, col)
         {

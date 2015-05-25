@@ -9,8 +9,7 @@ namespace Igs.Hcms.Tmpl.Elements
     internal class StringLiteral : Expression {
         private string _content;
 
-        public StringLiteral(int line, int col, string content)
-        : base(line, col)
+        public StringLiteral(int line, int col, string content) : base(line, col)
         {
             _content = content;
         }

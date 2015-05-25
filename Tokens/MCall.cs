@@ -20,26 +20,9 @@ namespace Igs.Hcms.Tmpl.Elements
             this.obj  = obj;
         }
 
-        public Expression CallObject
-        {
-            get {
-                return this.obj;
-            }
-        }
-
-        public Expression[] Args
-        {
-            get {
-                return this.args;
-            }
-        }
-
-        public string Name
-        {
-            get {
-                return this.name;
-            }
-        }
+        public Expression CallObject { get { return this.obj;  }  }
+        public Expression[] Args     { get { return this.args; }  }
+        public string Name           { get { return this.name; }  }
 
     }
 }

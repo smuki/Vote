@@ -18,26 +18,9 @@ namespace Igs.Hcms.Tmpl.Elements
             this.op  = op;
         }
 
-        public Expression Lhs
-        {
-            get {
-                return this.lhs;
-            }
-        }
-
-        public Expression Rhs
-        {
-            get {
-                return this.rhs;
-            }
-        }
-
-        public TokenKind Operator
-        {
-            get {
-                return this.op;
-            }
-        }
+        public Expression Lhs     { get { return this.lhs; }  }
+        public Expression Rhs     { get { return this.rhs; }  }
+        public TokenKind Operator { get { return this.op;  }  }
 
     }
 }

@@ -59,7 +59,7 @@ namespace Igs.Hcms.Tmpl
             _mnr.RegisterFunction("writeline"     , FuncWriteLine);
         }
 
-        static object FuncWrite(object[] args)
+        private static object FuncWrite(object[] args)
         {
             if (!_mnr.CheckArgCount(1, "write", args)) {
                 return null;
@@ -70,7 +70,7 @@ namespace Igs.Hcms.Tmpl
             return "";
         }
 
-        static object FuncWriteLine(object[] args)
+        private static object FuncWriteLine(object[] args)
         {
             if (!_mnr.CheckArgCount(1, "writeline", args)) {
                 return null;
@@ -81,7 +81,7 @@ namespace Igs.Hcms.Tmpl
             return "";
         }
 
-        static object FuncReadFile(object[] args)
+        private static object FuncReadFile(object[] args)
         {
             List<string> _Data     = new List<string>();
 
@@ -104,7 +104,7 @@ namespace Igs.Hcms.Tmpl
             return _Data;
         }
 
-        static object FuncWriteFile(object[] args)
+        private static object FuncWriteFile(object[] args)
         {
             if (!_mnr.CheckArgCount(2, 3, "writefile", args)) {
                 return null;
@@ -120,7 +120,7 @@ namespace Igs.Hcms.Tmpl
         }
 
 #if CSHARP30
-        static dynamic FuncQuery(object[] args)
+        private static dynamic FuncQuery(object[] args)
         {
 
             if (!_mnr.CheckArgCount(1, 2, "query", args)) {
@@ -171,7 +171,7 @@ namespace Igs.Hcms.Tmpl
             return _EntityCompiler.GetEntities(_ar, _DataReader, className);
         }
 #endif
-        static object FuncContains(object[] args)
+        private static object FuncContains(object[] args)
         {
             if (!_mnr.CheckArgCount(2, 6, "contains", args)) {
                 return null;

@@ -9,12 +9,12 @@ namespace Igs.Hcms.Tmpl
     internal class Parser {
         private Lexer lexer;
         private Token current;
-        private List<Element> elements;
+        private List<Token> elements;
 
         public Parser(Lexer lexer)
         {
             this.lexer = lexer;
-            this.elements = new List<Element>();
+            this.elements = new List<Token>();
         }
 
         private Token Consume()
@@ -43,14 +43,14 @@ namespace Igs.Hcms.Tmpl
             }
         }
 
-        public List<Element> Parse()
+        public List<Token> Parse()
         {
             elements.Clear();
 
             Consume();
 
             while (true) {
-                Element elem = ReadElement();
+                Token elem = ReadElement();
 
                 if (elem == null) {
                     break;
@@ -62,12 +62,12 @@ namespace Igs.Hcms.Tmpl
             return elements;
         }
 
-        internal List<Element> CreateHierarchy()
+        internal List<Token> CreateHierarchy()
         {
-            List<Element> result = new List<Element>();
+            List<Token> result = new List<Token>();
 
             for (int index = 0; index < elements.Count; index++) {
-                Element elem = elements[index];
+                Token elem = elements[index];
 
                 if (elem is Text) {
                     result.Add(elem);
@@ -98,7 +98,7 @@ namespace Igs.Hcms.Tmpl
             Tag collectTag = tag;
 
             for (index++; index < elements.Count; index++) {
-                Element elem = elements[index];
+                Token elem = elements[index];
 
                 if (elem is Text) {
                     collectTag.InnerElements.Add(elem);
@@ -137,7 +137,7 @@ namespace Igs.Hcms.Tmpl
             throw new TmplException("Start tag: [" + tag.Name + "] does not have matching end tag." + tag.Line + "," + tag.Col, tag.Line, tag.Col);
         }
 
-        private Element ReadElement()
+        private Token ReadElement()
         {
             switch (Current.TokenKind) {
             case TokenKind.EOF:
