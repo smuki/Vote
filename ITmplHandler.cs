@@ -6,7 +6,7 @@ using System.Text;
 
 #endregion
 
-using Igs.Hcms.Tmpl.Elements;
+using Igs.Hcms.Tmpl.Tokens;
 namespace Igs.Hcms.Tmpl
 {
     public interface ITmplHandler {

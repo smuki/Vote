@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Text;
 #endregion
 
-namespace Igs.Hcms.Tmpl.Elements
+namespace Igs.Hcms.Tmpl.Tokens
 {
     public abstract class Expression : Token {
-        public Expression(int line, int col)
-        : base(line, col)
+
+        public Expression(TokenKind kind , int line , int col) : base(kind , line , col)
         {
 
         }

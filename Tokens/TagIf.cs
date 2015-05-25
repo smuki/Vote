@@ -6,13 +6,14 @@ using System.Text;
 
 #endregion
 
-namespace Igs.Hcms.Tmpl.Elements
+namespace Igs.Hcms.Tmpl.Tokens
 {
     internal class IfStatement : Tag {
         private Tag falseBranch;
         private Expression _when;
 
-        public IfStatement(int line, int col, Expression when) : base(line, col, "if")
+        public IfStatement(int line , int col , Expression when) :
+            base(TokenKind.If , line , col)
         {
             _when = when;
         }

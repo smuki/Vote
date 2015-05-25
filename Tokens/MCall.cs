@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 #endregion
 
-namespace Igs.Hcms.Tmpl.Elements
+namespace Igs.Hcms.Tmpl.Tokens
 {
     //MethodCall
     internal class MCall : Expression {
@@ -12,8 +12,8 @@ namespace Igs.Hcms.Tmpl.Elements
         private Expression obj;
         private Expression[] args;
 
-        public MCall(int line, int col, Expression obj, string name, Expression[] args)
-        : base(line, col)
+        public MCall(int line    , int col , Expression obj , string name , Expression[] args) :
+            base(TokenKind.MCall , line    , col)
         {
             this.name = name;
             this.args = args;

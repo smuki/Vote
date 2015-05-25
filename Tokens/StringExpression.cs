@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Text;
 #endregion
 
-namespace Igs.Hcms.Tmpl.Elements
+namespace Igs.Hcms.Tmpl.Tokens
 {
     internal class StringExpression : Expression {
         private List<Expression> exps;
 
-        public StringExpression(int line, int col) : base(line, col)
+        public StringExpression(int line    , int col):
+            base(TokenKind.StringExpression , line     , col)
         {
             exps = new List<Expression>();
         }

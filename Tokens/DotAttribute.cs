@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 #endregion
 
-namespace Igs.Hcms.Tmpl.Elements
+namespace Igs.Hcms.Tmpl.Tokens
 {
     public class DotAttribute {
         private string name;

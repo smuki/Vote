@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-using Igs.Hcms.Tmpl.Elements;
+using Igs.Hcms.Tmpl.Tokens;
 
 namespace Igs.Hcms.Tmpl
 {

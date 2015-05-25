@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 #endregion
 
-namespace Igs.Hcms.Tmpl.Elements
+namespace Igs.Hcms.Tmpl.Tokens
 {
     public class Tag : Token {
         private string name = "";
@@ -12,6 +12,12 @@ namespace Igs.Hcms.Tmpl.Elements
         private bool _isClosed;  // set to true if tag ends with />
         private List<DotAttribute> attribs;
         private List<Token> innerElements;
+
+        public Tag(TokenKind kind , int line , int col) : base(kind , line , col)
+        {
+            this.attribs = new List<DotAttribute>();
+            this.innerElements = new List<Token>();
+        }
 
         public Tag(int line, int col, string name) : base(line, col)
         {

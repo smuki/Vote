@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Text;
 #endregion
 
-namespace Igs.Hcms.Tmpl.Elements
+namespace Igs.Hcms.Tmpl.Tokens
 {
     internal class Name : Expression {
         private string id;
 
-        public Name(int line, int col, string id) : base(line, col)
+        public Name(int line , int col , string id) : base(TokenKind.ID , line , col)
         {
             this.id = id;
         }

@@ -6,7 +6,7 @@ using System.Data;
 using System.Reflection;
 using System.IO;
 
-using Igs.Hcms.Tmpl.Elements;
+using Igs.Hcms.Tmpl.Tokens;
 
 namespace Igs.Hcms.Tmpl
 {

@@ -5,7 +5,7 @@ using System.Text;
 using System.IO;
 #endregion
 
-using Igs.Hcms.Tmpl.Elements;
+using Igs.Hcms.Tmpl.Tokens;
 
 namespace Igs.Hcms.Tmpl
 {

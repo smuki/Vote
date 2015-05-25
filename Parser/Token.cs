@@ -9,11 +9,18 @@ namespace Igs.Hcms.Tmpl
         private int _line;
         private int _col;
         private string _data;
+        private string _type;
         private TokenKind _tokenKind;
-        private string    _type;
 
         public Token(int line, int col)
         {
+            _line      = line;
+            _col       = col;
+        }
+
+        public Token(TokenKind kind, int line, int col)
+        {
+            _tokenKind = kind;
             _line      = line;
             _col       = col;
         }
@@ -26,8 +33,8 @@ namespace Igs.Hcms.Tmpl
             _data      = data;
         }
 
-        public int Col { get { return _col; } }
-        public int Line { get { return _line; } }
+        public int Col  { get { return _col;  }  }
+        public int Line { get { return _line; }  }
 
         public string Data         { get { return _data;      } set { _data      = value; }  }
         public string Type         { get { return _type;      } set { _type      = value; }  }

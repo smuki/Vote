@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using System.Text;
 #endregion
 
-namespace Igs.Hcms.Tmpl.Elements
+namespace Igs.Hcms.Tmpl.Tokens
 {
     internal class ArrayAccess : Expression {
         private Expression _exp;
         private Expression _index;
 
-        public ArrayAccess(int line, int col, Expression exp, Expression index)
-        : base(line, col)
+        public ArrayAccess(int line , int col , Expression exp, Expression index) :
+            base(TokenKind.ArrayAccess   , line    , col)
         {
             _exp = exp;
             _index = index;

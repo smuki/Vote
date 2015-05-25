@@ -4,13 +4,14 @@ using System.Collections.Generic;
 using System.Text;
 #endregion
 
-namespace Igs.Hcms.Tmpl.Elements
+namespace Igs.Hcms.Tmpl.Tokens
 {
     internal class FieldAccess : Expression {
         private Expression exp;
         private string field;
 
-        public FieldAccess(int line, int col, Expression exp, string field) : base(line, col)
+        public FieldAccess(int line, int col, Expression exp, string field) :
+            base(TokenKind.FieldAccess , line    , col)
         {
             this.exp = exp;
             this.field = field;
