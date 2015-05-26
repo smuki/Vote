@@ -10,7 +10,7 @@ namespace Igs.Hcms.Tmpl.Tokens
         private string _content;
 
         public StringLiteral(int line, int col, string content) :
-            base(TokenKind.StringLiteral , line    , col)
+        base(TokenKind.StringLiteral , line    , col)
         {
             _content = content;
         }

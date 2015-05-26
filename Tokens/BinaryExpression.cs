@@ -12,7 +12,7 @@ namespace Igs.Hcms.Tmpl.Tokens
         private TokenKind op;
 
         public BinaryExpression(int line    , int col , Expression lhs , TokenKind op , Expression rhs) :
-            base(TokenKind.BinaryExpression , line    , col)
+        base(TokenKind.BinaryExpression , line    , col)
         {
             this.lhs = lhs;
             this.rhs = rhs;

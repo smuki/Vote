@@ -711,7 +711,7 @@ namespace Igs.Hcms.Tmpl
             }
 
             if (condition) {
-                ProcessElements(tagIf.InnerElements);
+                ProcessElements(tagIf.InnerTokens);
             } else {
                 ProcessElement(tagIf.FalseBranch);
             }
@@ -727,7 +727,7 @@ namespace Igs.Hcms.Tmpl
                     break;
 
                 case "else":
-                    ProcessElements(tag.InnerElements);
+                    ProcessElements(tag.InnerTokens);
                     break;
 
                 case "using":
@@ -805,7 +805,7 @@ namespace Igs.Hcms.Tmpl
                     _variables[indexname] = index;
                 }
 
-                ProcessElements(tag.InnerElements);
+                ProcessElements(tag.InnerTokens);
             }
         }
 
@@ -836,7 +836,7 @@ namespace Igs.Hcms.Tmpl
 
             for (int index = start; index <= end; index++) {
                 SetValue(indexName, index);
-                ProcessElements(tag.InnerElements);
+                ProcessElements(tag.InnerTokens);
             }
         }
 
@@ -844,14 +844,14 @@ namespace Igs.Hcms.Tmpl
         {
             ITmplHandler tagHandler = customTags[tag.Name];
 
-            bool processInnerElements = true;
+            bool processInnerTokens = true;
             bool captureInnerContent  = false;
 
-            tagHandler.BeforeProcess(this, tag, ref processInnerElements, ref captureInnerContent);
+            tagHandler.BeforeProcess(this, tag, ref processInnerTokens, ref captureInnerContent);
 
             string innerContent = null;
 
-            if (processInnerElements) {
+            if (processInnerTokens) {
                 TextWriter saveWriter = writer;
 
                 if (captureInnerContent) {
@@ -859,7 +859,7 @@ namespace Igs.Hcms.Tmpl
                 }
 
                 try {
-                    ProcessElements(tag.InnerElements);
+                    ProcessElements(tag.InnerTokens);
 
                     innerContent = writer.ToString();
                 } finally {
@@ -890,7 +890,7 @@ namespace Igs.Hcms.Tmpl
             string content        = string.Empty;
 
             try {
-                ProcessElements(tag.InnerElements);
+                ProcessElements(tag.InnerTokens);
 
                 content = writer.ToString();
             } finally {

@@ -138,7 +138,7 @@ namespace Igs.Hcms.Tmpl
 
             AddAttribs(tag.Attributes);
 
-            foreach (Token elem in tag.InnerElements) {
+            foreach (Token elem in tag.InnerTokens) {
                 visitElement(elem);
             }
         }
@@ -150,7 +150,7 @@ namespace Igs.Hcms.Tmpl
 
             AddAttribs(tag.Attributes);
 
-            foreach (Token elem in tag.InnerElements) {
+            foreach (Token elem in tag.InnerTokens) {
                 visitElement(elem);
             }
 
@@ -205,7 +205,7 @@ namespace Igs.Hcms.Tmpl
                             tname = "?";
                         }
 
-                        Tmpl tmpl = new Tmpl(tname, tag.InnerElements, this);
+                        Tmpl tmpl = new Tmpl(tname, tag.InnerTokens, this);
                         tmpls[tname] = tmpl;
                     }
                 }

@@ -11,19 +11,19 @@ namespace Igs.Hcms.Tmpl.Tokens
         private StatementClose closeTag;
         private bool _isClosed;  // set to true if tag ends with />
         private List<DotAttribute> attribs;
-        private List<Token> innerElements;
+        private List<Token> _innerTokens;
 
         public Tag(TokenKind kind , int line , int col) : base(kind , line , col)
         {
             this.attribs = new List<DotAttribute>();
-            this.innerElements = new List<Token>();
+            _innerTokens = new List<Token>();
         }
 
         public Tag(int line, int col, string name) : base(line, col)
         {
             this.name = name;
             this.attribs = new List<DotAttribute>();
-            this.innerElements = new List<Token>();
+            _innerTokens = new List<Token>();
         }
 
         public Expression AttributeValue(string name)
@@ -37,10 +37,10 @@ namespace Igs.Hcms.Tmpl.Tokens
             return null;
         }
 
-        public List<Token> InnerElements
+        public List<Token> InnerTokens
         {
             get {
-                return this.innerElements;
+                return _innerTokens;
             }
         }
 

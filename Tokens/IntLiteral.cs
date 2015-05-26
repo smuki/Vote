@@ -10,7 +10,7 @@ namespace Igs.Hcms.Tmpl.Tokens
         private int value;
 
         public IntLiteral(int line , int col , int value) :
-            base(TokenKind.Integer  , line    , col)
+        base(TokenKind.Integer  , line    , col)
         {
             this.value = value;
         }

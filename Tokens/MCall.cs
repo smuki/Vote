@@ -13,7 +13,7 @@ namespace Igs.Hcms.Tmpl.Tokens
         private Expression[] args;
 
         public MCall(int line    , int col , Expression obj , string name , Expression[] args) :
-            base(TokenKind.MCall , line    , col)
+        base(TokenKind.MCall , line    , col)
         {
             this.name = name;
             this.args = args;

@@ -10,7 +10,7 @@ namespace Igs.Hcms.Tmpl.Tokens
         private List<Expression> exps;
 
         public StringExpression(int line    , int col):
-            base(TokenKind.StringExpression , line     , col)
+        base(TokenKind.StringExpression , line     , col)
         {
             exps = new List<Expression>();
         }

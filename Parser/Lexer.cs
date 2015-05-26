@@ -99,9 +99,10 @@ namespace Igs.Hcms.Tmpl
 
         private string TryRead(int count)
         {
-            if (_pos+count >= _data.Length) {
-                count=count-(_pos+count-_data.Length);
+            if (_pos + count >= _data.Length) {
+                count = count - (_pos + count - _data.Length);
             }
+
             return _data.Substring(_pos, count);
         }
 
@@ -624,40 +625,40 @@ namespace Igs.Hcms.Tmpl
                         eat_tag_start = 2;
                         _f_tag_start  = true;
 
-                    } else if (TryRead(8).ToLower() == "@define " ) {
+                    } else if (TryRead(8).ToLower() == "@define ") {
                         _f_tag_start = true;
 
-                    } else if (TryRead(7).ToLower() == "@using " ) {
+                    } else if (TryRead(7).ToLower() == "@using ") {
                         _f_tag_start = true;
 
-                    } else if (TryRead(5).ToLower() == "@for " ) {
+                    } else if (TryRead(5).ToLower() == "@for ") {
                         _f_tag_start = true;
 
-                    } else if (TryRead(4).ToLower() == "@if " ) {
+                    } else if (TryRead(4).ToLower() == "@if ") {
                         _f_tag_start = true;
-                    } else if (TryRead(9).ToLower() == "@foreach " ) {
+                    } else if (TryRead(9).ToLower() == "@foreach ") {
                         _f_tag_start = true;
-                    } else if (TryRead(5).ToLower() == "@else" ) {
+                    } else if (TryRead(5).ToLower() == "@else") {
                         _f_tag_start = true;
                     }
                 } else if (LA(0) == '~') {
 
-                    if (TryRead(4).ToLower() == "~if " ) {
+                    if (TryRead(4).ToLower() == "~if ") {
 
                         _f_tag_end = true;
 
-                    } else if (TryRead(9).ToLower() == "~foreach " ) {
+                    } else if (TryRead(9).ToLower() == "~foreach ") {
 
                         _f_tag_end = true;
-                    } else if (TryRead(5).ToLower() == "~for " ) {
-
-                        _f_tag_end = true;
-
-                    } else if (TryRead(8).ToLower() == "~define " ) {
+                    } else if (TryRead(5).ToLower() == "~for ") {
 
                         _f_tag_end = true;
 
-                    } else if (TryRead(7).ToLower() == "~using " ) {
+                    } else if (TryRead(8).ToLower() == "~define ") {
+
+                        _f_tag_end = true;
+
+                    } else if (TryRead(7).ToLower() == "~using ") {
 
                         _f_tag_end = true;
 
@@ -667,7 +668,7 @@ namespace Igs.Hcms.Tmpl
                     if (LA(1) == '~') {
                         eat_tag_end = 2;
                         _f_tag_end = true;
-                    } else if (TryRead(6).ToLower() == "}@else" ) {
+                    } else if (TryRead(6).ToLower() == "}@else") {
                         eat_tag_start = 2;
                         _f_tag_start = true;
 

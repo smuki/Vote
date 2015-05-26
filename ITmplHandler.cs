@@ -14,7 +14,7 @@ namespace Igs.Hcms.Tmpl
 
         void AfterProcess(TmplManager manager);
 
-        void BeforeProcess(TmplManager manager, Tag tag, ref bool processInnerElements, ref bool captureInnerContent);
+        void BeforeProcess(TmplManager manager, Tag tag, ref bool processInnerTokens, ref bool captureInnerContent);
 
         void AfterProcess(TmplManager manager, Tag tag, string innerContent);
 

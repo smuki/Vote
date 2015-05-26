@@ -101,9 +101,9 @@ namespace Igs.Hcms.Tmpl
                 Token elem = elements[index];
 
                 if (elem is Text) {
-                    collectTag.InnerElements.Add(elem);
+                    collectTag.InnerTokens.Add(elem);
                 } else if (elem is Expression) {
-                    collectTag.InnerElements.Add(elem);
+                    collectTag.InnerTokens.Add(elem);
                 } else if (elem is Tag) {
                     Tag innerTag = (Tag) elem;
 
@@ -123,7 +123,7 @@ namespace Igs.Hcms.Tmpl
                             throw new TmplException("elseif tag is not positioned properly" + innerTag.Line + "," + innerTag.Col, innerTag.Line, innerTag.Col);
                         }
                     } else {
-                        collectTag.InnerElements.Add(CollectForTag(innerTag, ref index));
+                        collectTag.InnerTokens.Add(CollectForTag(innerTag, ref index));
                     }
                 } else if (elem is StatementClose) {
                     StatementClose tagClose = (StatementClose) elem;

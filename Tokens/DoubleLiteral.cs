@@ -9,8 +9,8 @@ namespace Igs.Hcms.Tmpl.Tokens
     internal class DoubleLiteral : Expression {
         private double _value;
 
-        public DoubleLiteral(int line , int col,double value) :
-            base(TokenKind.Double , line , col)
+        public DoubleLiteral(int line , int col, double value) :
+        base(TokenKind.Double , line , col)
         {
             _value = value;
         }

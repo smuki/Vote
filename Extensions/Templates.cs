@@ -14,13 +14,16 @@ namespace Igs.Hcms.Tmpl
 
         private object _PENDING    = new object();
         private string _appPath    = "";
+        private string _templateFile    = "";
         private string _codePath   = "";
         private string _debugMode  = "N";
         private string _regionPath = @"{AppPath}\code;{AppPath}\template;{AppPath}";
-        private string _Extensions = ".tpl;.cs";
+        private string _Extensions = ".tpl;.cs;.shtml";
 
-        public string CodePath  { get { return _codePath;  } set { _codePath  = value; }  }
-        public string DebugMode { get { return _debugMode; } set { _debugMode = value; }  }
+        public string AppPath      { get { return _appPath;      } set { _appPath      = value; }  }
+        public string CodePath     { get { return _codePath;     } set { _codePath     = value; }  }
+        public string DebugMode    { get { return _debugMode;    } set { _debugMode    = value; }  }
+        public string TemplateFile { get { return _templateFile; } set { _templateFile = value; }  }
 
         public string KeepSingleEmptyLine(string data)
         {
@@ -254,6 +257,8 @@ namespace Igs.Hcms.Tmpl
                                 foreach (string _Extension in _Extensions.Split(';')) {
                                     if (File.Exists(spath + cUID_CODE + _Extension)) {
                                         _Region_File_Name = spath + cUID_CODE + _Extension;
+                                    } else if (File.Exists(spath + TemplateFile + _Extension)) {
+                                        _Region_File_Name = spath + TemplateFile + _Extension;
                                     }
                                 }
                             }

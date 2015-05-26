@@ -11,7 +11,7 @@ namespace Igs.Hcms.Tmpl.Tokens
         private string field;
 
         public FieldAccess(int line, int col, Expression exp, string field) :
-            base(TokenKind.FieldAccess , line    , col)
+        base(TokenKind.FieldAccess , line    , col)
         {
             this.exp = exp;
             this.field = field;

@@ -13,7 +13,7 @@ namespace Igs.Hcms.Tmpl.Tokens
         private Expression _when;
 
         public IfStatement(int line , int col , Expression when) :
-            base(TokenKind.If , line , col)
+        base(TokenKind.If , line , col)
         {
             _when = when;
         }

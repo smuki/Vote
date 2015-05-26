@@ -11,7 +11,7 @@ namespace Igs.Hcms.Tmpl.Tokens
         private Expression _index;
 
         public ArrayAccess(int line , int col , Expression exp, Expression index) :
-            base(TokenKind.ArrayAccess   , line    , col)
+        base(TokenKind.ArrayAccess   , line    , col)
         {
             _exp = exp;
             _index = index;
