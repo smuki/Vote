@@ -155,46 +155,49 @@ You can use array access with any object that has indexer property.
 
 Here is a list of the engine Operator/functions:
 
-| Operator/Function              | Description                                                                    | Example                               |
-| --                             | :---                                                                           | :---                                  |
-| +, -                           | Additive                                                                       | 100 + a                               |
-| *, /                           | Multiplicative                                                                 | 100 * 2 / (3 % 2)                     |
-| %                              | Mod                                                                            | 16 % 3                                |
-| ^                              | Power                                                                          | 5.3 ^ 3                               |
-| -                              | Negation                                                                       | -6 + 10                               |
-| +                              | Concatenation                                                                  | "abc" + "def"                         |
-| &                              | Concatenation                                                                  | "abc" & "def"                         |
-| ==, !=, <, >, <=, >=           | Comparison                                                                     | 2.5 > 100                             |
-| And, Or                        | Logical                                                                        | (1 > 10) and (true or not false)      |
-| not(boolvalue)                 | Logical                                                                        | not(true or not false)                |
-| IIf                            | Conditional                                                                    | IIf(a > 100, "greater", "less")       |
-| .                              | Member                                                                         | varA.varB.function("a")               |
-| String                         | literal                                                                        | "string!"                             |
-| number                         | double integer                                                                 | 100+97.21                             |
-| Boolean                        | literal                                                                        | true AND false                        |
-| isnull(object)                 | test whether object is null                                                    | isnull(var)                           |
-| isnullorempty(string)          | test whether string isnullorempty.                                             | isnullorempty(var)                    |
-| isnotempty(string)             | test whether string has at least 1 character.                                  | isnotempty(var)                       |
-| toupper(string)                | converts string to upper case                                                  | toupper(var)                          |
-| tolower(string)                | converts string to lower case                                                  | tolower(var)                          |
-| trim(string)                   | will trim string object                                                        | trim(var)                             |
-| len(string)                    | returns length of string                                                       | len(var)                              |
-| cint(value)                    | converts value to integer                                                      | cint(var)                             |
-| cdouble(value)                 | converts value to double                                                       | cdouble(var)                          |
-| cdate(value)                   | converts value to datetime                                                     | cdate(var)                            |
-| isnumber(num)                  | tests whether num is of numeric type                                           | isnumber(var)                         |
-| isdefined(varname)             | tests whether variable varname is defined                                      | isdefined(varname)                    |
-| ifdefined(varname,varname)     | returns value if varname is defined.otherwise return nothing                   | ifdefined("varname",varname)          |
-| typeof(object)                 | return string representation of the type of object.                            | typeof(object)                        |
-| format(object,formatstring)    | will call Tostring(formatstring) on object                                     | format(object)                        |
-| replace(string,f1,r1)          | return search f1 and replaces with r1                                          | replace("a apple","apple","orange")   |
-| round(value,decimal,opt)       | rounds a number to the given number of decimal places                          | round(3.456,2)                        |
-| indexof(value,find)            | returns the first occurrence of a letter in a string.                          | indexof("one,two,tree","two")         |
-| join(list,property,separator)  | return elements of an array separated by the specified separator               | join(list,",")/join(list,"name",","   |
-| split(string,sep1,sep2)        | Split string into array by separator                                           | split("one,two,tree,four",",")        |
-| sweep(string,s1,s2,s3)         | sweep string (s1,s2...)                                                        | sweep("o,t,x,f","t","f")              |
-| filter(mylist,booleanproperty) | return new list from mylist for those objects whose property evaluates to true | filter(mylist,"display")              |
-| typeref(type)                  | create a reference type                                                        | TypeRef("System.Math").Round(3.39789) |
+```
+<table>
+<tr><td> Operator/Function              <td> Description                                                                    <td> Example                               </tr>
+<tr><td> --                             <td> :---                                                                           <td> :---                                  </tr>
+<tr><td> +, -                           <td> Additive                                                                       <td> 100 + a                               </tr>
+<tr><td> *, /                           <td> Multiplicative                                                                 <td> 100 * 2 / (3 % 2)                     </tr>
+<tr><td> %                              <td> Mod                                                                            <td> 16 % 3                                </tr>
+<tr><td> ^                              <td> Power                                                                          <td> 5.3 ^ 3                               </tr>
+<tr><td> -                              <td> Negation                                                                       <td> -6 + 10                               </tr>
+<tr><td> +                              <td> Concatenation                                                                  <td> "abc" + "def"                         </tr>
+<tr><td> &                              <td> Concatenation                                                                  <td> "abc" & "def"                         </tr>
+<tr><td> ==, !=, <, >, <=, >=           <td> Comparison                                                                     <td> 2.5 > 100                             </tr>
+<tr><td> And, Or                        <td> Logical                                                                        <td> (1 > 10) and (true or not false)      </tr>
+<tr><td> not(boolvalue)                 <td> Logical                                                                        <td> not(true or not false)                </tr>
+<tr><td> IIf                            <td> Conditional                                                                    <td> IIf(a > 100, "greater", "less")       </tr>
+<tr><td> .                              <td> Member                                                                         <td> varA.varB.function("a")               </tr>
+<tr><td> String                         <td> literal                                                                        <td> "string!"                             </tr>
+<tr><td> number                         <td> double integer                                                                 <td> 100+97.21                             </tr>
+<tr><td> Boolean                        <td> literal                                                                        <td> true AND false                        </tr>
+<tr><td> isnull(object)                 <td> test whether object is null                                                    <td> isnull(var)                           </tr>
+<tr><td> isnullorempty(string)          <td> test whether string isnullorempty.                                             <td> isnullorempty(var)                    </tr>
+<tr><td> isnotempty(string)             <td> test whether string has at least 1 character.                                  <td> isnotempty(var)                       </tr>
+<tr><td> toupper(string)                <td> converts string to upper case                                                  <td> toupper(var)                          </tr>
+<tr><td> tolower(string)                <td> converts string to lower case                                                  <td> tolower(var)                          </tr>
+<tr><td> trim(string)                   <td> will trim string object                                                        <td> trim(var)                             </tr>
+<tr><td> len(string)                    <td> returns length of string                                                       <td> len(var)                              </tr>
+<tr><td> cint(value)                    <td> converts value to integer                                                      <td> cint(var)                             </tr>
+<tr><td> cdouble(value)                 <td> converts value to double                                                       <td> cdouble(var)                          </tr>
+<tr><td> cdate(value)                   <td> converts value to datetime                                                     <td> cdate(var)                            </tr>
+<tr><td> isnumber(num)                  <td> tests whether num is of numeric type                                           <td> isnumber(var)                         </tr>
+<tr><td> isdefined(varname)             <td> tests whether variable varname is defined                                      <td> isdefined(varname)                    </tr>
+<tr><td> ifdefined(varname,varname)     <td> returns value if varname is defined.otherwise return nothing                   <td> ifdefined("varname",varname)          </tr>
+<tr><td> typeof(object)                 <td> return string representation of the type of object.                            <td> typeof(object)                        </tr>
+<tr><td> format(object,formatstring)    <td> will call Tostring(formatstring) on object                                     <td> format(object)                        </tr>
+<tr><td> replace(string,f1,r1)          <td> return search f1 and replaces with r1                                          <td> replace("a apple","apple","orange")   </tr>
+<tr><td> round(value,decimal,opt)       <td> rounds a number to the given number of decimal places                          <td> round(3.456,2)                        </tr>
+<tr><td> indexof(value,find)            <td> returns the first occurrence of a letter in a string.                          <td> indexof("one,two,tree","two")         </tr>
+<tr><td> join(list,property,separator)  <td> return elements of an array separated by the specified separator               <td> join(list,",")/join(list,"name",","   </tr>
+<tr><td> split(string,sep1,sep2)        <td> Split string into array by separator                                           <td> split("one,two,tree,four",",")        </tr>
+<tr><td> sweep(string,s1,s2,s3)         <td> sweep string (s1,s2...)                                                        <td> sweep("o,t,x,f","t","f")              </tr>
+<tr><td> filter(mylist,booleanproperty) <td> return new list from mylist for those objects whose property evaluates to true <td> filter(mylist,"display")              </tr>
+<tr><td> typeref(type)                  <td> create a reference type                                                        <td> TypeRef("System.Math").Round(3.39789) </tr>
+</table>
 
 
 ###Statement:###
