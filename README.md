@@ -155,7 +155,6 @@ You can use array access with any object that has indexer property.
 
 Here is a list of the engine Operator/functions:
 
-```
 <table>
 <tr><td> Operator/Function              <td> Description                                                                    <td> Example                               </tr>
 <tr><td> --                             <td> :---                                                                           <td> :---                                  </tr>
