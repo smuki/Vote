@@ -4,14 +4,13 @@ using System.Collections.Generic;
 using System.Text;
 #endregion
 
-namespace Igs.Hcms.Tmpl.Tokens
+namespace Igs.Hcms.Volt.Tokens
 {
     internal class FieldAccess : Expression {
         private Expression exp;
         private string field;
 
-        public FieldAccess(int line, int col, Expression exp, string field) :
-        base(TokenKind.FieldAccess , line    , col)
+        public FieldAccess(int line , int col , Expression exp , string field) : base(TokenKind.FieldAccess , line , col)
         {
             this.exp = exp;
             this.field = field;

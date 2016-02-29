@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using System.Reflection;
 #endregion
 
-namespace Igs.Hcms.Tmpl
+namespace Igs.Hcms.Volt
 {
     internal static class Logical {
         private static TmplManager _mnr;
@@ -32,6 +32,7 @@ namespace Igs.Hcms.Tmpl
             _mnr.RegisterFunction("len"           , FuncLen);
             _mnr.RegisterFunction("join"          , FuncJoin);
             _mnr.RegisterFunction("split"         , FuncSplit);
+            _mnr.RegisterFunction("listcontains"  , FuncListContains);
             _mnr.RegisterFunction("isnull"        , FuncIsNull);
             _mnr.RegisterFunction("not"           , FuncNot);
             _mnr.RegisterFunction("iif"           , FuncIif);
@@ -49,6 +50,7 @@ namespace Igs.Hcms.Tmpl
             _mnr.RegisterFunction("now"           , FuncNow);
             _mnr.RegisterFunction("typeref"       , FuncTypeRef);
             _mnr.RegisterFunction("templates"     , FuncTemplates);
+            _mnr.RegisterFunction("regions"       , FuncRegions);
             _mnr.RegisterFunction("todict"        , FuncToDict);
 #if CSHARP30
             _mnr.RegisterFunction("query"         , FuncQuery);
@@ -154,11 +156,11 @@ namespace Igs.Hcms.Tmpl
                     //    _Fields.Append ("_");
                     //    _Fields.Append (_DataReader.GetName (i));
                     //}
-                } catch (TmplException ex) {
+                } catch (VoltException ex) {
                     _mnr.DisplayError(ex);
                     return null;
                 } catch (Exception ex) {
-                    _mnr.DisplayError(new TmplException(ex.Message, _mnr.CurrentExpression.Line, _mnr.CurrentExpression.Col));
+                    _mnr.DisplayError(new VoltException(ex.Message, _mnr.CurrentExpression.Line, _mnr.CurrentExpression.Col));
                     return null;
                 }
 
@@ -171,6 +173,48 @@ namespace Igs.Hcms.Tmpl
             return _EntityCompiler.GetEntities(_ar, _DataReader, className);
         }
 #endif
+
+        private static void WriteLog(object cMsg)
+        {
+
+            string rootPath  = AppDomain.CurrentDomain.BaseDirectory;
+            string separator = Path.DirectorySeparatorChar.ToString();
+            rootPath  = rootPath.Replace("/", separator);
+            if (rootPath.Substring(rootPath.Length - 1) != separator){
+              rootPath = rootPath + separator;
+            }
+            string sFileName = rootPath + "temp" + separator + "log" + separator+"Templates.log";
+            StreamWriter _debug = new StreamWriter(sFileName, true);
+            _debug.WriteLine(cMsg);
+            _debug.Close();
+
+        }
+
+        private static object FuncListContains(object[] args)
+        {
+            if (!_mnr.CheckArgCount(2, 2, "listcontains", args)) {
+                return null;
+            }
+
+            object list = args[0];
+            string property = args[1].ToString();
+
+            if (!(list is IEnumerable)) {
+                throw new VoltException("argument 1 of arraycontains has to be IEnumerable", 0, 0);
+            }
+
+            IEnumerator ienum = ((IEnumerable) list).GetEnumerator();
+
+            while (ienum.MoveNext()) {
+
+                if (ienum.Current.ToString()==property){
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private static object FuncContains(object[] args)
         {
             if (!_mnr.CheckArgCount(2, 6, "contains", args)) {
@@ -253,9 +297,21 @@ namespace Igs.Hcms.Tmpl
             return _Data;
         }
 
+        private static object FuncRegions(object[] args)
+        {
+            if (!_mnr.CheckArgCount(2, "regions", args)) {
+                return null;
+            }
+
+            string _UID_CODE = args[0].ToString();
+
+            return _Templates.Parse(_UID_CODE, _Templates.getRegion(_UID_CODE, args[1].ToString()));
+
+        }
+
         private static object FuncTemplates(object[] args)
         {
-            if (!_mnr.CheckArgCount(3, "templates", args)) {
+            if (!_mnr.CheckArgCount(2, "templates", args)) {
                 return null;
             }
 
@@ -396,7 +452,7 @@ namespace Igs.Hcms.Tmpl
             }
 
             if (!(list is IEnumerable)) {
-                throw new TmplException("argument 1 of join has to be IEnumerable", 0, 0);
+                throw new VoltException("argument 1 of join has to be IEnumerable", 0, 0);
             }
 
             IEnumerator ienum = ((IEnumerable) list).GetEnumerator();
@@ -439,7 +495,7 @@ namespace Igs.Hcms.Tmpl
             if (args[0] is bool) {
                 return !(bool) args[0];
             } else {
-                throw new TmplException("Parameter 1 of function 'not' is not boolean", 0, 0);
+                throw new VoltException("Parameter 1 of function 'not' is not boolean", 0, 0);
             }
 
         }
@@ -454,7 +510,7 @@ namespace Igs.Hcms.Tmpl
                 bool test = (bool) args[0];
                 return test ? args[1] : args[2];
             } else {
-                throw new TmplException("Parameter 1 of function 'iif' is not boolean", 0, 0);
+                throw new VoltException("Parameter 1 of function 'iif' is not boolean", 0, 0);
             }
         }
 
@@ -498,7 +554,7 @@ namespace Igs.Hcms.Tmpl
             property = args[1].ToString();
 
             if (!(list is IEnumerable)) {
-                throw new TmplException("argument 1 of filter has to be IEnumerable", 0, 0);
+                throw new VoltException("argument 1 of filter has to be IEnumerable", 0, 0);
             }
 
             IEnumerator ienum = ((IEnumerable) list).GetEnumerator();
@@ -531,7 +587,7 @@ namespace Igs.Hcms.Tmpl
 
         private static object FuncSweep(object[] args)
         {
-            if (!_mnr.CheckArgCount(2, 6, "weed", args)) {
+            if (!_mnr.CheckArgCount(2, 6, "sweep", args)) {
                 return null;
             }
 
@@ -589,6 +645,7 @@ namespace Igs.Hcms.Tmpl
 
             foreach (string a in array) {
                 s1 = s1.Replace("<ref" + i + ">", a);
+                s1 = s1.Replace("<r" + i + ">", a);
                 i++;
             }
 
@@ -686,7 +743,7 @@ namespace Igs.Hcms.Tmpl
                 }
             }
 
-            throw new TmplException("Cannot create type " + typeName + ".", 0, 0);
+            throw new VoltException("Cannot create type " + typeName + ".", 0, 0);
         }
 
     }

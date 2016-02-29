@@ -6,9 +6,9 @@ using System.Data;
 using System.Reflection;
 using System.IO;
 
-using Igs.Hcms.Tmpl.Tokens;
+using Igs.Hcms.Volt.Tokens;
 
-namespace Igs.Hcms.Tmpl
+namespace Igs.Hcms.Volt
 {
 
     public delegate object FunctionDefinition(object[] args);
@@ -19,37 +19,47 @@ namespace Igs.Hcms.Tmpl
         private static readonly object _PENDING = new object();
         private bool _silentErrors;
         private bool _scriptMode;
+        private bool _debug       = true;
+        private string _debugFile = "";
 
         private Dictionary<string, FunctionDefinition> _fnTbl;
         private Dictionary<string, ITmplHandler> customTags;
         private Variable _variables;
         internal Expression CurrentExpression;
         private TextWriter writer;
-        private Tmpl _mainTmpl;
-        private Tmpl _currentTmpl;
+        private Volt _mainTmpl;
+        private Volt _currentTmpl;
         private ITmplHandler _handler;
         private Templates _Templates;
         private IDbConnection _connection;
 
-        public ITmplHandler Handler     { get { return _handler;      } set { _handler      = value; }  }
+        public Volt MainTmpl        { get { return _mainTmpl;   } set { _mainTmpl   = value; }  }
+        public ITmplHandler Handler   { get { return _handler;      } set { _handler      = value; }  }
         public bool SilentErrors        { get { return _silentErrors; } set { _silentErrors = value; }  }
         public bool ScriptMode          { get { return _scriptMode;   } set { _scriptMode   = value; }  }
+        public bool Debug               { get { return _debug;        } set { _debug        = value; }  }
+        public string DebugFile         { get { return _debugFile;    } set { _debugFile    = value; }  }
         public IDbConnection Connection { get { return _connection;   } set { _connection   = value; }  }
 
-        public TmplManager(Tmpl tmpl)
+        public TmplManager(Volt tmpl)
         {
-            _mainTmpl     = tmpl;
-            _currentTmpl  = tmpl;
-            _silentErrors = false;
-            _scriptMode   = false;
+            _mainTmpl    = tmpl;
+            _currentTmpl = tmpl;
+            _silentErrors  = false;
+            _scriptMode    = false;
 
-            Init();
+            Initialize();
+        }
+
+        public static TmplManager Parser(string name, string tmpl)
+        {
+            Volt iTmpl = Volt.Parser(name , tmpl);
+            return new TmplManager(iTmpl);
         }
 
         public static TmplManager Parser(string tmpl)
         {
-            Tmpl iTmpl = Tmpl.Parser("", tmpl);
-            return new TmplManager(iTmpl);
+            return TmplManager.Parser("", tmpl);
         }
 
         private Dictionary<string, ITmplHandler> CustomTags
@@ -80,12 +90,12 @@ namespace Igs.Hcms.Tmpl
             CustomTags.Remove(tagName);
         }
 
-        public void AddTmpl(Tmpl tmpl)
+        public void AddTmpl(Volt tmpl)
         {
             _mainTmpl.Tmpls.Add(tmpl.Name, tmpl);
         }
 
-        private void Init()
+        private void Initialize()
         {
             _fnTbl     = new Dictionary<string, FunctionDefinition> (StringComparer.InvariantCultureIgnoreCase);
             _variables = new Variable();
@@ -99,7 +109,6 @@ namespace Igs.Hcms.Tmpl
             Logical.Register(this, _Templates);
 
         }
-
         #region Functions
 
         public void RegisterFunction(string functionName, FunctionDefinition fn)
@@ -127,7 +136,6 @@ namespace Igs.Hcms.Tmpl
                 return true;
             }
         }
-
         #endregion
 
         public bool IsDefined(string name)
@@ -159,11 +167,12 @@ namespace Igs.Hcms.Tmpl
                 _handler.BeforeProcess(this);
             }
 
-            ProcessElements(_mainTmpl.Elements);
+            ProcessTokens(_mainTmpl.Elements);
 
             if (_handler != null) {
                 _handler.AfterProcess(this);
             }
+
         }
 
         public string Process()
@@ -175,9 +184,9 @@ namespace Igs.Hcms.Tmpl
 
         public string Evaluate(string expression)
         {
-            TmplManager Tmpl    = TmplManager.Parser("${" + expression + "}");
+            TmplManager Volt    = TmplManager.Parser("${" + expression + "}");
             StringWriter writer = new StringWriter();
-            Tmpl.Process(writer);
+            Volt.Process(writer);
             return writer.ToString();
         }
 
@@ -186,14 +195,14 @@ namespace Igs.Hcms.Tmpl
             _variables.Clear();
         }
 
-        private void ProcessElements(List<Token> list)
+        private void ProcessTokens(List<Token> list)
         {
             foreach (Token elem in list) {
-                ProcessElement(elem);
+                ProcessToken(elem);
             }
         }
 
-        private void ProcessElement(Token elem)
+        private void ProcessToken(Token elem)
         {
             if (elem is Text) {
                 Text text = (Text) elem;
@@ -237,14 +246,16 @@ namespace Igs.Hcms.Tmpl
 
                 } else if (exp is IntLiteral) {
                     return ((IntLiteral) exp).Value;
+
                 } else if (exp is DoubleLiteral) {
                     return ((DoubleLiteral) exp).Value;
+
                 } else if (exp is FCall) {
                     FCall fcall = (FCall) exp;
 
                     if (!_fnTbl.ContainsKey(fcall.Name)) {
                         string msg = string.Format("Function {0} is not defined", fcall.Name);
-                        throw new TmplException(msg, exp.Line, exp.Col);
+                        throw new VoltException(msg, exp.Line, exp.Col);
                     }
 
                     FunctionDefinition func = _fnTbl[fcall.Name];
@@ -266,16 +277,16 @@ namespace Igs.Hcms.Tmpl
                 } else if (exp is ArrayAccess) {
                     return ProcessArrayAccess(exp as ArrayAccess);
                 } else {
-                    throw new TmplException("Invalid expression type: " + exp.GetType().Name, exp.Line, exp.Col);
+                    throw new VoltException("Invalid expression type: " + exp.GetType().Name, exp.Line, exp.Col);
                 }
 
-            } catch (TmplException ex) {
+            } catch (VoltException ex) {
                 DisplayError(ex);
                 return null;
             } catch (Exception ex) {
 
                 string _Message = "Message=" + ex.Message + "," + "Source=" + ex.Source + ",StackTrace=" + ex.StackTrace + ",TargetSite=" + ex.TargetSite + "";
-                DisplayError(new TmplException(_Message, CurrentExpression.Line, CurrentExpression.Col));
+                DisplayError(new VoltException(_Message, CurrentExpression.Line, CurrentExpression.Col));
                 return null;
             }
         }
@@ -286,12 +297,12 @@ namespace Igs.Hcms.Tmpl
             object index = EvalExpression(arrayAccess.Index);
 
             if (obj is Array) {
-                Array array = (Array) obj;
+                Array _array = (Array)obj;
 
                 if (index is int) {
-                    return array.GetValue((int) index);
+                    return _array.GetValue((int) index);
                 } else {
-                    throw new TmplException("Index of array has to be integer", arrayAccess.Line, arrayAccess.Col);
+                    throw new VoltException("Index of array has to be integer", arrayAccess.Line, arrayAccess.Col);
                 }
             } else {
                 return ProcessMCall(obj, "get_Item", new object[] { index });
@@ -308,7 +319,7 @@ namespace Igs.Hcms.Tmpl
             IComparable c2;
 
             switch (exp.Operator) {
-            case Igs.Hcms.Tmpl.TokenKind.OpOr:
+            case Igs.Hcms.Volt.TokenKind.OpOr:
 
                 lhsValue = EvalExpression(exp.Lhs);
 
@@ -319,7 +330,7 @@ namespace Igs.Hcms.Tmpl
                 rhsValue = EvalExpression(exp.Rhs);
                 return Util.ToBoolean(rhsValue);
 
-            case Igs.Hcms.Tmpl.TokenKind.OpLet:
+            case Igs.Hcms.Volt.TokenKind.OpLet:
 
                 lhsValue = exp.Lhs;
 
@@ -336,15 +347,15 @@ namespace Igs.Hcms.Tmpl
                     object obj          = EvalExpression(fa.Exp);
                     string propertyName = fa.Field;
 
-                    setProperty(obj, propertyName, rhsValue);
+                    setProperty(obj , propertyName , rhsValue);
 
                     return string.Empty;
 
                 } else {
-                    throw new TmplException("variable name." + lhsValue.ToString(), exp.Line, exp.Col);
+                    throw new VoltException("variable name." + lhsValue.ToString(), exp.Line, exp.Col);
                 }
 
-            case Igs.Hcms.Tmpl.TokenKind.OpAnd:
+            case Igs.Hcms.Volt.TokenKind.OpAnd:
 
                 lhsValue = EvalExpression(exp.Lhs);
 
@@ -355,7 +366,7 @@ namespace Igs.Hcms.Tmpl
                 rhsValue = EvalExpression(exp.Rhs);
                 return Util.ToBoolean(rhsValue);
 
-            case Igs.Hcms.Tmpl.TokenKind.OpIs:
+            case Igs.Hcms.Volt.TokenKind.OpIs:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -381,14 +392,14 @@ namespace Igs.Hcms.Tmpl
                     return c1.CompareTo(c2) == 0;
                 }
 
-            case Igs.Hcms.Tmpl.TokenKind.OpIsNot:
+            case Igs.Hcms.Volt.TokenKind.OpIsNot:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
 
                 return !lhsValue.Equals(rhsValue);
 
-            case Igs.Hcms.Tmpl.TokenKind.OpGt:
+            case Igs.Hcms.Volt.TokenKind.OpGt:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -402,7 +413,7 @@ namespace Igs.Hcms.Tmpl
                     return c1.CompareTo(c2) == 1;
                 }
 
-            case Igs.Hcms.Tmpl.TokenKind.OpAdd:
+            case Igs.Hcms.Volt.TokenKind.OpAdd:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -423,7 +434,7 @@ namespace Igs.Hcms.Tmpl
                     return Convert.ToDouble(lhsValue) + Convert.ToDouble(rhsValue);
                 }
 
-            case Igs.Hcms.Tmpl.TokenKind.OpConcat:
+            case Igs.Hcms.Volt.TokenKind.OpConcat:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -434,7 +445,7 @@ namespace Igs.Hcms.Tmpl
                     return lhsValue.ToString() + rhsValue.ToString();
                 }
 
-            case Igs.Hcms.Tmpl.TokenKind.OpMul:
+            case Igs.Hcms.Volt.TokenKind.OpMul:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -453,7 +464,7 @@ namespace Igs.Hcms.Tmpl
                     return Convert.ToDouble(lhsValue) * Convert.ToDouble(rhsValue);
                 }
 
-            case Igs.Hcms.Tmpl.TokenKind.OpDiv:
+            case Igs.Hcms.Volt.TokenKind.OpDiv:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -472,7 +483,7 @@ namespace Igs.Hcms.Tmpl
                     return Convert.ToDouble(lhsValue) / Convert.ToDouble(rhsValue);
                 }
 
-            case Igs.Hcms.Tmpl.TokenKind.OpMod:
+            case Igs.Hcms.Volt.TokenKind.OpMod:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -491,7 +502,7 @@ namespace Igs.Hcms.Tmpl
                     return Convert.ToDouble(lhsValue) % Convert.ToDouble(rhsValue);
                 }
 
-            case Igs.Hcms.Tmpl.TokenKind.OpPow:
+            case Igs.Hcms.Volt.TokenKind.OpPow:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -510,7 +521,7 @@ namespace Igs.Hcms.Tmpl
                     return Math.Pow(Convert.ToDouble(lhsValue) , Convert.ToDouble(rhsValue));
                 }
 
-            case Igs.Hcms.Tmpl.TokenKind.OpLt:
+            case Igs.Hcms.Volt.TokenKind.OpLt:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -534,7 +545,7 @@ namespace Igs.Hcms.Tmpl
                     return c1.CompareTo(c2) == -1;
                 }
 
-            case Igs.Hcms.Tmpl.TokenKind.OpGte:
+            case Igs.Hcms.Volt.TokenKind.OpGte:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -558,7 +569,7 @@ namespace Igs.Hcms.Tmpl
                     return c1.CompareTo(c2) >= 0;
                 }
 
-            case Igs.Hcms.Tmpl.TokenKind.OpLte:
+            case Igs.Hcms.Volt.TokenKind.OpLte:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -583,7 +594,7 @@ namespace Igs.Hcms.Tmpl
                 }
 
             default:
-                throw new TmplException("Operator " + exp.Operator.ToString() + " is not supported.", exp.Line, exp.Col);
+                throw new VoltException("Operator " + exp.Operator.ToString() + " is not supported.", exp.Line, exp.Col);
             }
         }
 
@@ -598,7 +609,7 @@ namespace Igs.Hcms.Tmpl
             return values;
         }
 
-        internal static void setProperty(object obj, string propertyName, object _value)
+        internal static void setProperty(object obj , string propertyName , object _value)
         {
             if (obj is TypeRef) {
                 Type type = (obj as TypeRef).Type;
@@ -711,9 +722,9 @@ namespace Igs.Hcms.Tmpl
             }
 
             if (condition) {
-                ProcessElements(tagIf.InnerTokens);
+                ProcessTokens(tagIf.Tokens);
             } else {
-                ProcessElement(tagIf.FalseBranch);
+                ProcessToken(tagIf.FalseBranch);
             }
         }
 
@@ -727,7 +738,7 @@ namespace Igs.Hcms.Tmpl
                     break;
 
                 case "else":
-                    ProcessElements(tag.InnerTokens);
+                    ProcessTokens(tag.Tokens);
                     break;
 
                 case "using":
@@ -747,31 +758,35 @@ namespace Igs.Hcms.Tmpl
                     ProcessTmpl(tag.Name, tag);
                     break;
                 }
-            } catch (TmplException ex) {
+            } catch (VoltException ex) {
                 DisplayError(ex);
             } catch (Exception ex) {
+
+                string cMessage = "[" + ex.Message + "],[" + ex.Source + "],[" + ex.StackTrace + "],[" + ex.TargetSite + "]";
+                Console.WriteLine(cMessage);
                 DisplayError("Error executing tag '" + name + "': " + ex.Message, tag.Line, tag.Col);
             }
         }
 
         private void ProcessForeach(Tag tag)
         {
+
             Expression expCollection = tag.AttributeValue("list");
 
             if (expCollection == null) {
-                throw new TmplException("Foreach is missing required attribute: collection", tag.Line, tag.Col);
+                throw new VoltException("Foreach is missing required attribute: collection", tag.Line, tag.Col);
             }
 
             object collection = EvalExpression(expCollection);
 
             if (!(collection is IEnumerable)) {
-                throw new TmplException("Collection used in foreach has to be enumerable", tag.Line, tag.Col);
+                throw new VoltException("Collection used in foreach has to be enumerable", tag.Line, tag.Col);
             }
 
             Expression expVar = tag.AttributeValue("var");
 
             if (expCollection == null) {
-                throw new TmplException("Foreach is missing required attribute: var", tag.Line, tag.Col);
+                throw new VoltException("Foreach is missing required attribute: var", tag.Line, tag.Col);
             }
 
             object varObject = EvalExpression(expVar);
@@ -783,7 +798,7 @@ namespace Igs.Hcms.Tmpl
             string varname = varObject.ToString();
 
             Expression expIndex = tag.AttributeValue("index");
-            string indexname    = null;
+            string indexname    = "_index_";
 
             if (expIndex != null) {
                 object obj = EvalExpression(expIndex);
@@ -805,7 +820,7 @@ namespace Igs.Hcms.Tmpl
                     _variables[indexname] = index;
                 }
 
-                ProcessElements(tag.InnerTokens);
+                ProcessTokens(tag.Tokens);
             }
         }
 
@@ -814,19 +829,19 @@ namespace Igs.Hcms.Tmpl
             Expression expFrom = tag.AttributeValue("from");
 
             if (expFrom == null) {
-                throw new TmplException("For is missing required attribute: start", tag.Line, tag.Col);
+                throw new VoltException("For is missing required attribute: start", tag.Line, tag.Col);
             }
 
             Expression expTo = tag.AttributeValue("to");
 
             if (expTo == null) {
-                throw new TmplException("For is missing required attribute: to", tag.Line, tag.Col);
+                throw new VoltException("For is missing required attribute: to", tag.Line, tag.Col);
             }
 
             Expression expIndex = tag.AttributeValue("index");
 
             if (expIndex == null) {
-                throw new TmplException("For is missing required attribute: index", tag.Line, tag.Col);
+                throw new VoltException("For is missing required attribute: index", tag.Line, tag.Col);
             }
 
             object obj       = EvalExpression(expIndex);
@@ -836,7 +851,7 @@ namespace Igs.Hcms.Tmpl
 
             for (int index = start; index <= end; index++) {
                 SetValue(indexName, index);
-                ProcessElements(tag.InnerTokens);
+                ProcessTokens(tag.Tokens);
             }
         }
 
@@ -844,14 +859,14 @@ namespace Igs.Hcms.Tmpl
         {
             ITmplHandler tagHandler = customTags[tag.Name];
 
-            bool processInnerTokens = true;
-            bool captureInnerContent  = false;
+            bool processTokens       = true;
+            bool captureInnerContent = false;
 
-            tagHandler.BeforeProcess(this, tag, ref processInnerTokens, ref captureInnerContent);
+            tagHandler.BeforeProcess(this, tag, ref processTokens, ref captureInnerContent);
 
             string innerContent = null;
 
-            if (processInnerTokens) {
+            if (processTokens) {
                 TextWriter saveWriter = writer;
 
                 if (captureInnerContent) {
@@ -859,7 +874,7 @@ namespace Igs.Hcms.Tmpl
                 }
 
                 try {
-                    ProcessElements(tag.InnerTokens);
+                    ProcessTokens(tag.Tokens);
 
                     innerContent = writer.ToString();
                 } finally {
@@ -878,11 +893,11 @@ namespace Igs.Hcms.Tmpl
                 return;
             }
 
-            Tmpl useTmpl = _currentTmpl.FindTmpl(name);
+            Volt useTmpl = _currentTmpl.FindTmpl(name);
 
             if (useTmpl == null) {
-                string msg = string.Format("Tmpl '{0}' not found", name);
-                throw new TmplException(msg, tag.Line, tag.Col);
+                string msg = string.Format("Volt '{0}' not found", name);
+                throw new VoltException(msg, tag.Line, tag.Col);
             }
 
             TextWriter saveWriter = writer;
@@ -890,14 +905,14 @@ namespace Igs.Hcms.Tmpl
             string content        = string.Empty;
 
             try {
-                ProcessElements(tag.InnerTokens);
+                ProcessTokens(tag.Tokens);
 
                 content = writer.ToString();
             } finally {
                 writer = saveWriter;
             }
 
-            Tmpl saveTmpl           = _currentTmpl;
+            Volt saveTmpl       = _currentTmpl;
             _variables              = new Variable(_variables);
             _variables["innerText"] = content;
 
@@ -908,9 +923,9 @@ namespace Igs.Hcms.Tmpl
                 }
 
                 _currentTmpl = useTmpl;
-                ProcessElements(_currentTmpl.Elements);
+                ProcessTokens(_currentTmpl.Elements);
             } finally {
-                _variables   = _variables.Parent;
+                _variables     = _variables.Parent;
                 _currentTmpl = saveTmpl;
             }
         }
@@ -933,8 +948,8 @@ namespace Igs.Hcms.Tmpl
 
             string _Message = "Message=" + ex.Message + "," + "Source=" + ex.Source + ",StackTrace=" + ex.StackTrace + ",TargetSite=" + ex.TargetSite + "";
 
-            if (ex is TmplException) {
-                TmplException tex = (TmplException) ex;
+            if (ex is VoltException) {
+                VoltException tex = (VoltException) ex;
 
                 DisplayError(_Message, tex.Line, tex.Col);
             } else {
@@ -946,7 +961,7 @@ namespace Igs.Hcms.Tmpl
         internal void DisplayError(string msg, int line, int col)
         {
             if (_scriptMode) {
-                throw new TmplException(msg, line, col);
+                throw new VoltException(msg, line, col);
             } else {
 
                 if (!_silentErrors) {

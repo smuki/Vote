@@ -1,6 +1,6 @@
 using System;
 
-namespace Igs.Hcms.Tmpl
+namespace Igs.Hcms.Volt
 {
     class TypeRef {
         readonly Type _type;

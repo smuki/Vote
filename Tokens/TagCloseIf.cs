@@ -4,18 +4,18 @@ using System.Text;
 
 namespace Igs.Hcms.Volt.Tokens
 {
-    public class TagClose : Token {
-        private string _name;
+    public class TagCloseIf : Token {
+        private string name;
 
-        public TagClose(int line , int col , string name) : base(line , col)
+        public TagCloseIf(int line, int col, string name) : base(line, col)
         {
-            _name = name;
+            this.name = name;
         }
 
         public string Name
         {
             get {
-                return _name;
+                return this.name;
             }
         }
     }

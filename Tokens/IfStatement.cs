@@ -1,31 +1,28 @@
-﻿#region Using directives
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
-#endregion
-
-namespace Igs.Hcms.Tmpl.Tokens
+namespace Igs.Hcms.Volt.Tokens
 {
     internal class IfStatement : Tag {
-        private Tag falseBranch;
+        private Tag _falseBranch;
         private Expression _when;
 
-        public IfStatement(int line , int col , Expression when) :
-        base(TokenKind.If , line , col)
+        public IfStatement(int line , int col , Expression when) : base(TokenKind.If , line , col)
         {
             _when = when;
+            base.Name="If";
         }
 
         public Tag FalseBranch
         {
             get {
-                return this.falseBranch;
+                return _falseBranch;
             } set {
-                this.falseBranch = value;
+                _falseBranch = value;
             }
         }
+
         public Expression Test
         {
             get {

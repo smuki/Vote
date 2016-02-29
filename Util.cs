@@ -5,12 +5,12 @@ using System.Text;
 using System.Text.RegularExpressions;
 #endregion
 
-namespace Igs.Hcms.Tmpl
+namespace Igs.Hcms.Volt
 {
     internal static class Util {
-        private static readonly Regex _RegexVarName = new Regex("^[a-zA-Z_][a-zA-Z0-9_]*$", RegexOptions.Compiled);
-        private static object syncObject   = new object();
-        private static object _PENDING     = new object();
+        private static readonly Regex _RegexVarName = new Regex("^[a-zA-Z_][a-zA-Z0-9_]*$" , RegexOptions.Compiled);
+        private static object syncObject = new object();
+        private static object _PENDING   = new object();
 
         public static bool ToBoolean(object obj)
         {
@@ -19,11 +19,11 @@ namespace Igs.Hcms.Tmpl
             } else if (obj is string) {
                 string str = (string) obj;
 
-                if (string.Compare(str, "true", true) == 0) {
+                if (string.Compare(str , "true" , true) == 0) {
                     return true;
-                } else if (string.Compare(str, "y", true) == 0) {
+                } else if (string.Compare(str , "y" , true) == 0) {
                     return true;
-                } else if (string.Compare(str, "yes", true) == 0) {
+                } else if (string.Compare(str , "yes" , true) == 0) {
                     return true;
                 }
             }
@@ -31,20 +31,16 @@ namespace Igs.Hcms.Tmpl
             return false;
         }
 
-        public static bool IsInt(object args)
+        public static bool IsInt(object str)
         {
-            try {
-                int value = Convert.ToInt32(args);
-                return true;
-            } catch (FormatException) {
-                return false;
-            }
+            int d;
+            return int.TryParse(str.ToString() , out d);
         }
 
         public static bool IsNumeric(object str)
         {
             decimal d;
-            return decimal.TryParse(str.ToString(), out d);
+            return decimal.TryParse(str.ToString() , out d);
         }
 
         public static bool IsVariableName(string name)

@@ -4,19 +4,19 @@ using System.Collections.Generic;
 using System.Text;
 #endregion
 
-namespace Igs.Hcms.Tmpl
+namespace Igs.Hcms.Volt
 {
-    internal class TmplException : Exception {
+    internal class VoltException : Exception {
         private int _line;
         private int _col;
 
-        public TmplException(string msg, int line, int col) : base(msg)
+        public VoltException(string msg, int line, int col) : base(msg)
         {
             _line = line;
             _col = col;
         }
 
-        public TmplException(string msg, Exception innerException, int line, int col) : base(msg, innerException)
+        public VoltException(string msg, Exception innerException, int line, int col) : base(msg, innerException)
         {
             _line = line;
             _col = col;

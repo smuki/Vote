@@ -1,16 +1,13 @@
-﻿#region Using directives
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
-#endregion
 
-namespace Igs.Hcms.Tmpl.Tokens
+namespace Igs.Hcms.Volt.Tokens
 {
     internal class DoubleLiteral : Expression {
         private double _value;
 
-        public DoubleLiteral(int line , int col, double value) :
-        base(TokenKind.Double , line , col)
+        public DoubleLiteral(int line , int col, double value) : base(TokenKind.Double , line , col)
         {
             _value = value;
         }

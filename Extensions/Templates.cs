@@ -7,23 +7,47 @@ using System.Xml;
 using System.IO;
 using System.Threading;
 
-namespace Igs.Hcms.Tmpl
+namespace Igs.Hcms.Volt
 {
     public class Templates {
-        private Dictionary<string, List<string>> _Regions = new Dictionary<string, List<string>>();
+        public Dictionary<string, List<string>> _Regions = new Dictionary<string, List<string>>();
+        private Dictionary<string, string> _RegionNames  = new Dictionary<string, string>();
+        private Dictionary<string, string> _TriggerNames = new Dictionary<string, string>();
+        private Dictionary<string, bool> _RegionFiles    = new Dictionary<string, bool>();
+        private Dictionary<string, int> _UsingRegion     = new Dictionary<string, int>();
 
-        private object _PENDING    = new object();
-        private string _appPath    = "";
-        private string _templateFile    = "";
-        private string _codePath   = "";
-        private string _debugMode  = "N";
-        private string _regionPath = @"{AppPath}\code;{AppPath}\template;{AppPath}";
-        private string _Extensions = ".tpl;.cs;.shtml";
+        private object _PENDING      = new object();
+        private string _appPath      = "";
+        private string _DirPath      = "";
+        private bool   _XmlFile      = false;
+        private string _UID_CODE     = "";
+        private string _templateFile = "";
+        private string _codePath     = "";
+        private string _debugMode    = "N";
+        private string _Lang         = "02";
+        private string _regionPath   = "";
+        private string _extensions   = ".tpl;.cs;.shtml";
 
         public string AppPath      { get { return _appPath;      } set { _appPath      = value; }  }
+        public string UID_CODE     { get { return _UID_CODE;     } set { _UID_CODE     = value; }  }
         public string CodePath     { get { return _codePath;     } set { _codePath     = value; }  }
         public string DebugMode    { get { return _debugMode;    } set { _debugMode    = value; }  }
+        public string Lang         { get { return _Lang;         } set { _Lang         = value; }  }
         public string TemplateFile { get { return _templateFile; } set { _templateFile = value; }  }
+
+        public Dictionary<string, string> RegionNames { get { return _RegionNames; } set { _RegionNames = value; }  }
+
+        public Templates()
+        {
+            _regionPath = @"{DirPath}\{Lang};";
+            _regionPath = _regionPath+ @"{DirPath}\template\{Lang};";
+            _regionPath = _regionPath+ @"{AppPath}\template\{Lang};";
+            _regionPath = _regionPath+ @"{AppPath}\code;";
+            _regionPath = _regionPath+ @"{AppPath}\template;";
+            _regionPath = _regionPath+ @"{AppPath};";
+            _regionPath = _regionPath+ @"{DirPath}\code;";
+            _regionPath = _regionPath+ @"{DirPath}\template;";
+        }
 
         public string KeepSingleEmptyLine(string data)
         {
@@ -52,32 +76,42 @@ namespace Igs.Hcms.Tmpl
             return _Data.ToString();
         }
 
-        public string PolicyTemplate(string UID_CODE, string sTrigger)
+        public void UsingRegion(string _RegionName , int Initialize = 1)
         {
 
-            string _ss;
-            string fileName = "";
-
-            foreach (string _path in(_regionPath + ";" + _codePath).Split(';')) {
-                if (!string.IsNullOrEmpty(_path)) {
-                    string spath = _path.Replace("{AppPath}", _appPath);
-                    spath = spath.Trim('\\') + "\\";
-
-                    if (Directory.Exists(spath)) {
-
-                        foreach (string _Extension in _Extensions.Split(';')) {
-                            if (File.Exists(spath + "N_R_Template" + _Extension)) {
-                                fileName = spath + "N_R_Template" + _Extension;
-                            }
-                        }
-                    }
+            if (Initialize==0){
+                if (!_UsingRegion.ContainsKey(_RegionName)) {
+                    _UsingRegion[_RegionName] = 0;
+                }
+            }else{
+                if (_UsingRegion.ContainsKey(_RegionName)) {
+                    _UsingRegion[_RegionName] = _UsingRegion[_RegionName]+1;
+                }else{
+                    _UsingRegion[_RegionName] = 1;
                 }
             }
-            using(StreamReader sr = new StreamReader(fileName, System.Text.Encoding.Default)) {
-                _ss = sr.ReadToEnd();
+        }
+
+        public Dictionary<string, int> UnUsing()
+        {
+            return _UsingRegion;
+        }
+
+        public string TriggerTemplate(string cUID_CODE, string sTrigger)
+        {
+
+            string _ss      = "";
+            string fileName = DetectFileName(cUID_CODE + "_N_R_Template" , "N_R_Template");
+
+            if (fileName != "T_0_1_2_3_4_5_6_7_8_9" && File.Exists(fileName)) {
+                UTF8Encoding _UTF8Encoding = new UTF8Encoding(false, true);
+                using(StreamReader sr = new StreamReader(fileName, _UTF8Encoding)) {
+                    _ss = sr.ReadToEnd();
+                }
+                _ss = _ss.Replace("{sTrigger}", sTrigger);
+                _ss = _ss.Replace("{UID_CODE}", cUID_CODE);
             }
-            _ss = _ss.Replace("{sTrigger}", sTrigger);
-            _ss = _ss.Replace("{UID_CODE}", UID_CODE);
+
             return _ss;
         }
 
@@ -86,18 +120,26 @@ namespace Igs.Hcms.Tmpl
             string _rtv = "";
 
             if (File.Exists(cFileName)) {
-                string _t_path = Path.GetDirectoryName(cFileName);
-                _appPath       = _t_path.Substring(0, _t_path.LastIndexOf('\\'));
-
                 List<string> _Data = new List<string>();
-                int _line          = 0;
-                bool _script       = false;
 
-                using(StreamReader sr = new StreamReader(cFileName, System.Text.Encoding.Default)) {
+                string _t_path = Path.GetDirectoryName(cFileName);
+                _DirPath       = _t_path.Substring(0, _t_path.LastIndexOf('\\'));
+                int _line      = 0;
+                bool _script   = false;
+                _XmlFile       = false;
+
+                UTF8Encoding _UTF8Encoding = new UTF8Encoding(false, true);
+                using(StreamReader sr = new StreamReader(cFileName, _UTF8Encoding)) {
                     string _ss;
 
                     while ((_ss = sr.ReadLine()) != null) {
                         string _s = _ss;
+                        if (_line<=3 )
+                        {
+                            if (_ss.IndexOf("<?xml") >= 0) {
+                                _XmlFile=true;
+                            }
+                        }
 
                         if (_script && _s.Trim() != "" && !((_s.Trim().IndexOf("@") == 0 && _s.IndexOf("@@") < 0) || _s.Trim().IndexOf("}~") == 0)) {
                             _s = "${" + _s + "}";
@@ -117,6 +159,8 @@ namespace Igs.Hcms.Tmpl
                     }
                 }
                 _rtv = Parse(cUID_CODE, _Data);
+            } else {
+                Console.WriteLine("Template-not found " + cFileName);
             }
 
             return _rtv ;
@@ -144,26 +188,47 @@ namespace Igs.Hcms.Tmpl
                 return "";
             }
 
-            int _bef_position = _data.IndexOf("@{") + 2;
-            int _aft_position = _data.IndexOf("}", _bef_position);
+            if (_data.Length > 5) {
+                int _bef_position = _data.IndexOf("@{") + 2;
 
-            if (_bef_position >= 2 && _aft_position > 0) {
-                string s = _data.Substring(_bef_position, _aft_position - _bef_position);
+                if (_bef_position >= 2) {
+                    int _aft_position = _data.IndexOf("}", _bef_position);
 
-                if (s.IndexOf("&") >= 0) {
-                    StreamWriter _File = new StreamWriter("Rules.ini", true);
-                    _File.WriteLine(cUID_CODE + "|" + s);
-                    _File.Close();
+                    if (_aft_position > 0) {
+                        string s = _data.Substring(_bef_position, _aft_position - _bef_position);
+
+                        s = s.Replace("$<UID_CODE>" , _UID_CODE);
+
+                        if (s.IndexOf("&") >= 0) {
+                            s = s.Replace("&", "");
+                            _TriggerNames[s] = "";
+                        }
+
+                        _RegionNames[s] = s;
+                        return s;
+                    }
                 }
+            }
 
-                return s;
-            } else {
-                return "";
+            return "";
+
+        }
+
+        public void ParseName(ref string sUID_CODE, ref string _RegionName)
+        {
+            int _position = _RegionName.IndexOf(".");
+
+            if (_position > 0) {
+                sUID_CODE   = _RegionName.Substring(0, _position);
+                _RegionName = _RegionName.Substring(_position + 1, _RegionName.Length - _position - 1);
+                _RegionName = _RegionName.ToLower();
+
+                _RegionNames[_RegionName] = _RegionName;
             }
 
         }
 
-        private string Parse(string cUID_CODE, List<string> cData)
+        public string Parse(string cUID_CODE, List<string> cData)
         {
             StringBuilder _Data = new StringBuilder();
 
@@ -171,58 +236,18 @@ namespace Igs.Hcms.Tmpl
                 string _RegionName = getRegionName(cUID_CODE, ss);
 
                 if (_RegionName != "") {
-                    bool Policy = _RegionName.IndexOf("&") >= 0;
 
-                    if (Policy) {
-                        _RegionName = _RegionName.Replace("&", "");
-                    }
 
-                    string _UID_CODE = cUID_CODE;
-                    int    _position = _RegionName.IndexOf(".");
+                    string sUID_CODE = cUID_CODE;
 
-                    if (_position > 0) {
-                        _UID_CODE   = _RegionName.Substring(0, _position);
-                        _RegionName = _RegionName.Substring(_position + 1, _RegionName.Length - _position - 1);
-                        _RegionName = _RegionName.ToUpper();
-                    }
+                    this.ParseName(ref sUID_CODE,ref _RegionName);
 
-                    List<string> _X_Region_Code = this.getRegion(_UID_CODE, _RegionName);
+                    List<string> _X_Region_Code = this.getRegion(sUID_CODE, _RegionName);
 
-                    if (DebugMode == "Y" && _UID_CODE.ToLower() != "include" && _RegionName.ToLower() != "init_X_Codetdriver") {
-                        _Data.AppendLine("//<--" + _UID_CODE + "." + _RegionName);
-                    }
+                    List<string> _R = this.ParseRegion(sUID_CODE, _RegionName, _X_Region_Code);
 
-                    if (_X_Region_Code.Count > 0) {
-                        int _ttl = 0;
-
-                        for (int i = 1; i < _X_Region_Code.Count && _ttl == 0; i++) {
-                            if (_X_Region_Code[_X_Region_Code.Count - i] == "}") {
-                                _ttl = _X_Region_Code.Count - i;
-                            }
-                        }
-
-                        bool _w_start_flag = false;
-                        int  _end_line     = 0;
-
-                        foreach (string _ss in _X_Region_Code) {
-                            if (_w_start_flag && _end_line != _ttl) {
-                                _Data.AppendLine(_ss);
-                            }
-
-                            if (_ss == "{") {
-                                _w_start_flag = true;
-                            }
-
-                            _end_line++;
-                        }
-                    }
-
-                    if (Policy) {
-                        _Data.AppendLine(PolicyTemplate(_UID_CODE, _RegionName));
-                    }
-
-                    if (DebugMode == "Y" && _UID_CODE.ToLower() != "include" && _RegionName.ToLower() != "init_X_Codetdriver") {
-                        _Data.AppendLine("//-->" + _UID_CODE + "." + _RegionName);
+                    foreach (string s in _R) {
+                        _Data.AppendLine(s);
                     }
 
                 } else {
@@ -233,39 +258,118 @@ namespace Igs.Hcms.Tmpl
             return _Data.ToString();
         }
 
-        private List<string> getRegion(string cUID_CODE, string cRegion)
+        public  List<string> ParseRegion(string sUID_CODE , string _RegionName , List<string> _Data)
+        {
+
+            List<string>  _Region_Data = new List<string>();
+
+            int _f = -1;
+            int _l = -1;
+
+            for (int i = 0; i < _Data.Count && _f == -1; i++) {
+                if (_Data[i] == "{") {
+                    _f = i;
+                }
+            }
+
+            for (int i = _Data.Count - 1; i >= 0 && _l == -1; i--) {
+                if (_Data[i].Trim() == "}") {
+                    _l = i;
+                }
+            }
+
+            if (_XmlFile==false && DebugMode == "Y" && _RegionName.Substring(0, 1) != "_") {
+                _Region_Data.Add("//<--" + sUID_CODE + "." + _RegionName);
+            }
+
+            if (_Data.Count > 0) {
+                if ((_f == -1 && _l != -1) || (_f != -1 && _l == -1)) {
+                    Console.WriteLine("invalid regions" + _RegionName);
+                } else {
+                    int _i = 0;
+
+                    foreach (string ss in _Data) {
+                        if (_i > _f && _i < _l) {
+                            _Region_Data.Add(ss);
+                        }
+                        _i++;
+                    }
+
+                }
+
+            }
+
+            if (_TriggerNames.ContainsKey(_RegionName)) {
+                _Region_Data.Add(TriggerTemplate(sUID_CODE, _RegionName));
+            }
+
+            if (_XmlFile==false && DebugMode == "Y" && _RegionName.Substring(0, 1) != "_") {
+                _Region_Data.Add("//-->" + sUID_CODE + "." + _RegionName);
+            }
+
+            return _Region_Data;
+
+        }
+
+        private string DetectFileName(string cUID_CODE, string template)
+        {
+
+            string _Region_FileName = "T_0_1_2_3_4_5_6_7_8_9";
+
+            foreach (string _path in(_regionPath + ";" + _codePath).Split(';')) {
+                if (!string.IsNullOrEmpty(_path) && _Region_FileName == "T_0_1_2_3_4_5_6_7_8_9") {
+
+                    string spath = _path.Replace("{AppPath}" , _appPath);
+                    spath        = spath.Replace("{DirPath}" , _DirPath);
+                    spath        = spath.Replace("{Lang}"    , this.Lang);
+                    spath        = spath.Trim('\\') + "\\";
+                    spath        = spath.Replace(@"\\" , @"\");
+
+                    if (Directory.Exists(spath)){
+
+                        foreach (string _Extension in _extensions.Split(';')) {
+
+                            if (_Region_FileName == "T_0_1_2_3_4_5_6_7_8_9"){
+
+                                if (File.Exists(spath + cUID_CODE + _Extension)) {
+                                    _Region_FileName = spath + cUID_CODE + _Extension;
+                                } else if (File.Exists(spath + template + _Extension)) {
+                                    _Region_FileName = spath + template + _Extension;
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+
+            return _Region_FileName;
+        }
+
+        public List<string> getRegion(string cUID_CODE, string cRegion)
         {
             string _RegionName  = (cUID_CODE + "_t_" + cRegion).ToLower();
             List<string>  _RegionCode = new List<string>();
+
 
             lock (_PENDING) {
 
                 if (_Regions.ContainsKey(_RegionName)) {
 
                     _RegionCode = _Regions[_RegionName];
+                    UsingRegion(_RegionName);
 
                 } else {
-                    string _Region_File_Name = "x_x_x_x";
 
-                    foreach (string _path in(_regionPath + ";" + _codePath).Split(';')) {
-                        if (!string.IsNullOrEmpty(_path)) {
-                            string spath = _path.Replace("{AppPath}", _appPath);
-                            spath = spath.Trim('\\') + "\\";
+                    string _Region_FileName = DetectFileName(cUID_CODE , TemplateFile);
 
-                            if (Directory.Exists(spath)) {
+                    bool _NeedParse = true;
 
-                                foreach (string _Extension in _Extensions.Split(';')) {
-                                    if (File.Exists(spath + cUID_CODE + _Extension)) {
-                                        _Region_File_Name = spath + cUID_CODE + _Extension;
-                                    } else if (File.Exists(spath + TemplateFile + _Extension)) {
-                                        _Region_File_Name = spath + TemplateFile + _Extension;
-                                    }
-                                }
-                            }
-                        }
+                    if (_RegionFiles.ContainsKey(_Region_FileName)) {
+                        _NeedParse = _RegionFiles[_Region_FileName];
                     }
 
-                    if (_Region_File_Name != "x_x_x_x" && File.Exists(_Region_File_Name)) {
+                    if (_NeedParse && _Region_FileName != "T_0_1_2_3_4_5_6_7_8_9" && File.Exists(_Region_FileName)) {
 
                         List<string> _FileData    = new List<string>();
                         List<string> _Region_Data = new List<string>();
@@ -274,7 +378,8 @@ namespace Igs.Hcms.Tmpl
                         string _region_name = "";
                         int    _l           = 0;
 
-                        using(StreamReader sr = new StreamReader(_Region_File_Name, System.Text.Encoding.Default)) {
+                        UTF8Encoding _UTF8Encoding = new UTF8Encoding(false, true);
+                        using(StreamReader sr = new StreamReader(_Region_FileName, _UTF8Encoding)) {
                             string c = "";
 
                             while ((c = sr.ReadLine()) != null) {
@@ -289,11 +394,15 @@ namespace Igs.Hcms.Tmpl
 
                                 } else if (cc.IndexOf("#endregion</T>") == 0 && _region_name == "") {
 
-                                    Console.WriteLine(_Region_File_Name + " invlid region " + cc + " in " + _l);
+                                    Console.WriteLine(_Region_FileName + " invlid region " + cc + " in " + _l);
 
                                 } else if (cc.IndexOf("#endregion</T>") == 0 && _region_name != "") {
 
+                                    _Region_Data.Add("//=====******" +_Region_FileName + cUID_CODE);
                                     _Regions[(cUID_CODE + "_t_" + _region_name).ToLower()] = _Region_Data;
+
+                                    UsingRegion((cUID_CODE + "_t_" + _region_name).ToLower() , 0);
+
                                     _region_name  = "";
                                     _l            = 0;
 
@@ -303,22 +412,11 @@ namespace Igs.Hcms.Tmpl
 
                                     if (_t_name != "") {
 
-                                        bool Policy = _RegionName.IndexOf("&") >= 0;
+                                        string sUID_CODE = cUID_CODE;
 
-                                        if (Policy) {
-                                            _RegionName = _RegionName.Replace("&", "");
-                                        }
+                                        this.ParseName(ref sUID_CODE,ref _t_name);
 
-                                        string _UID_CODE = cUID_CODE;
-                                        int _position    = _t_name.IndexOf(".");
-
-                                        if (_position > 0) {
-                                            _UID_CODE = _t_name.Substring(0, _position);
-                                            _t_name   = _t_name.Substring(_position + 1, _t_name.Length - _position - 1);
-                                            _t_name   = _t_name.ToUpper();
-                                        }
-
-                                        string _name = (_UID_CODE + "_t_" + _t_name).ToLower();
+                                        string _name = (sUID_CODE + "_t_" + _t_name).ToLower();
 
                                         List<string> _X_Region_Code = new List<string>();
 
@@ -328,44 +426,23 @@ namespace Igs.Hcms.Tmpl
 
                                         } else if (_name.ToLower() != _RegionName.ToLower()) {
 
-                                            _X_Region_Code = this.getRegion(_UID_CODE, _t_name);
+                                            _X_Region_Code = this.getRegion(sUID_CODE, _t_name);
 
                                         }
 
                                         if (_X_Region_Code.Count > 0) {
-                                            if (DebugMode == "Y") {
-                                                _Region_Data.Add("//<--" + _UID_CODE + "." + _t_name);
+
+                                            List<string> _R = this.ParseRegion(sUID_CODE, _t_name, _X_Region_Code);
+
+
+                                            foreach (string ss in _R) {
+
+                                                _Region_Data.Add(ss);
                                             }
 
-                                            bool _w_start_flag = false;
-                                            int  _end_line     = 0;
-                                            int _ttl           = 0;
-
-                                            for (int i = 1; i < _X_Region_Code.Count && _ttl == 0; i++) {
-                                                if (_X_Region_Code[_X_Region_Code.Count - i] == "}") {
-                                                    _ttl = _X_Region_Code.Count - i;
-                                                }
-                                            }
-
-                                            foreach (string ss in _X_Region_Code) {
-                                                if (_w_start_flag && _end_line != _ttl) {
-                                                    _Region_Data.Add(ss);
-                                                }
-
-                                                if (ss == "{") {
-                                                    _w_start_flag = true;
-                                                }
-
-                                                _end_line++;
-                                            }
-
-                                            if (Policy) {
-                                                _Region_Data.Add(PolicyTemplate(_UID_CODE, _RegionName));
-                                            }
-
-                                            if (DebugMode == "Y") {
-                                                _Region_Data.Add("//-->" + _UID_CODE + "." + _t_name);
-                                            }
+                                        } else {
+                                            _Regions[_t_name] = new List<string>();;
+                                            UsingRegion(_t_name , 0);
                                         }
                                     } else {
                                         _Region_Data.Add(cc);
@@ -376,8 +453,13 @@ namespace Igs.Hcms.Tmpl
                         }
                     }
 
+                    _RegionFiles[_Region_FileName] = false;
+
                     if (_Regions.ContainsKey(_RegionName)) {
                         _RegionCode = _Regions[_RegionName];
+                        UsingRegion(_RegionName);
+                    } else {
+                        _Regions[_RegionName] = new List<string>();;
                     }
 
                 }

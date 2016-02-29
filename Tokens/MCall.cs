@@ -1,10 +1,8 @@
-﻿#region Using directives
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
-#endregion
 
-namespace Igs.Hcms.Tmpl.Tokens
+namespace Igs.Hcms.Volt.Tokens
 {
     //MethodCall
     internal class MCall : Expression {
@@ -12,8 +10,7 @@ namespace Igs.Hcms.Tmpl.Tokens
         private Expression obj;
         private Expression[] args;
 
-        public MCall(int line    , int col , Expression obj , string name , Expression[] args) :
-        base(TokenKind.MCall , line    , col)
+        public MCall(int line , int col , Expression obj , string name , Expression[] args) : base(TokenKind.MCall , line , col)
         {
             this.name = name;
             this.args = args;

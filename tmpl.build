@@ -3,14 +3,14 @@
     <property name="build.dir" value="${environment::get-variable('TRUNK_PATH')}\dist" />
     <property name="debug" value="true" />
     <property name="unsafe" value="true" />
-
-    <target name="build" depends="Tmpl">
-
+    <target name="build" depends="Volt">
     </target>
 
-    <target name="Tmpl">
+    <target name="Volt">
         <property name="unsafe" value="true" />
-        <csc target="library" output="${environment::get-variable('TRUNK_PATH')}\dist\Igs.Hcms.Tmpl.dll" debug="${debug}" unsafe="${unsafe}">
+        <delete file="${environment::get-variable('TRUNK_PATH')}\dist\Igs.Hcms.Volt.dll" failonerror="false" />
+        <delete file="${environment::get-variable('TRUNK_PATH')}\dist\Igs.Hcms.Volt.pdb" failonerror="false" />
+        <csc target="library" output="${environment::get-variable('TRUNK_PATH')}\dist\Igs.Hcms.Volt.dll" debug="${debug}" unsafe="${unsafe}">
             <nowarn>
                 <!-- do not report deprecation warnings -->
                 <warning number="0618" />
@@ -25,7 +25,7 @@
                 <include name="Tokens\DoubleLiteral.cs" />
                 <include name="Tokens\MCall.cs" />
                 <include name="Tokens\IntLiteral.cs" />
-                <include name="Tokens\TagIf.cs" />
+                <include name="Tokens\IfStatement.cs" />
                 <include name="Tokens\FCall.cs" />
                 <include name="Tokens\DotAttribute.cs" />
                 <include name="Tokens\Expression.cs" />
@@ -35,6 +35,7 @@
                 <include name="Tokens\StringLiteral.cs" />
                 <include name="Tokens\Tag.cs" />
                 <include name="Tokens\TagClose.cs" />
+                <include name="Tokens\TagCloseIf.cs" />
                 <include name="Tokens\Text.cs" />
                 <include name="Parser\Lexer.cs" />
                 <include name="Parser\Parser.cs" />
@@ -46,8 +47,8 @@
                 <include name="Extensions\Logical.cs" />
                 <include name="ITmplHandler.cs" />
                 <include name="TmplManager.cs" />
-                <include name="Tmpl.cs" />
-                <include name="TmplException.cs" />
+                <include name="Volt.cs" />
+                <include name="VoltException.cs" />
                 <include name="Util.cs" />
                 <include name="Variable.cs" />
 
@@ -56,12 +57,5 @@
                 <include name = "${environment::get-variable('TRUNK_PATH')}\dist\Igs.Hcms.Dapper.dll" />
             </references>
         </csc>
-        <copy file="${environment::get-variable('TRUNK_PATH')}\dist\Igs.Hcms.Tmpl.dll" tofile="${environment::get-variable('TRUNK_PATH')}\Generator\iGOS\Igs.Hcms.Tmpl.dll"  failonerror="false" />
-        <copy file="${environment::get-variable('TRUNK_PATH')}\dist\Igs.Hcms.Tmpl.pdb" tofile="${environment::get-variable('TRUNK_PATH')}\Generator\iGOS\Igs.Hcms.Tmpl.pdb"  failonerror="false" />
-
-        <copy file="${environment::get-variable('TRUNK_PATH')}\dist\Igs.Hcms.Tmpl.dll" tofile="${environment::get-variable('PROJ_PATH')}\iGOS\bin\Igs.Hcms.Tmpl.dll"  failonerror="false" />
-        <copy file="${environment::get-variable('TRUNK_PATH')}\dist\Igs.Hcms.Tmpl.pdb" tofile="${environment::get-variable('PROJ_PATH')}\iGOS\bin\Igs.Hcms.Tmpl.pdb"  failonerror="false" />
-
-
     </target>
 </project>

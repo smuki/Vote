@@ -1,4 +1,4 @@
-﻿namespace Igs.Hcms.Tmpl
+﻿namespace Igs.Hcms.Volt
 {
     using System;
     using System.CodeDom.Compiler;

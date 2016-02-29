@@ -2,18 +2,19 @@
 using System.Collections.Generic;
 using System.Text;
 
-using Igs.Hcms.Tmpl.Tokens;
+using Igs.Hcms.Volt.Tokens;
 
-namespace Igs.Hcms.Tmpl
+namespace Igs.Hcms.Volt
 {
     internal class Parser {
         private Lexer lexer;
         private Token current;
         private List<Token> elements;
+        private int _indent = 0;
 
         public Parser(Lexer lexer)
         {
-            this.lexer = lexer;
+            this.lexer    = lexer;
             this.elements = new List<Token>();
         }
 
@@ -21,16 +22,31 @@ namespace Igs.Hcms.Tmpl
         {
             Token old = current;
             current = lexer.Next();
+
+            if (old != null) {
+                Print(old);
+            }
             return old;
+        }
+
+        private void Print(Token t)
+        {
+//           Console.WriteLine("");
+//           Console.Write(t.TokenKind);
+//           Console.Write("  ");
+//           Console.Write(lexer._currentMode);
+//           Console.WriteLine("        "+t.Data);
+
         }
 
         private Token Consume(TokenKind kind)
         {
             Token old = current;
             current = lexer.Next();
+            Print(old);
 
             if (old.TokenKind != kind) {
-                throw new TmplException("Unexpected token: " + current.TokenKind.ToString() + ". Was expecting: " + kind + " " + current.Line + "," + current.Col, current.Line, current.Col);
+                throw new VoltException("Consume Unexpected token: " + current.TokenKind.ToString() + ". Was expecting: " + kind + " " + current.Line + "," + current.Col, current.Line, current.Col);
             }
 
             return old;
@@ -46,7 +62,6 @@ namespace Igs.Hcms.Tmpl
         public List<Token> Parse()
         {
             elements.Clear();
-
             Consume();
 
             while (true) {
@@ -69,16 +84,23 @@ namespace Igs.Hcms.Tmpl
             for (int index = 0; index < elements.Count; index++) {
                 Token elem = elements[index];
 
+                //Console.WriteLine("==========xxx======="+elem.TokenKind);
+
                 if (elem is Text) {
                     result.Add(elem);
                 } else if (elem is Expression) {
                     result.Add(elem);
-                } else if (elem is Tag) {
+                } else if (elem is IfStatement) {
+                    //Console.WriteLine("==========Type3=======");
+
                     result.Add(CollectForTag((Tag) elem, ref index));
-                } else if (elem is StatementClose) {
-                    throw new TmplException("1Close tag for [" + ((StatementClose) elem).Name + "] doesn't have matching start tag. " + elem.Line + "," + elem.Col, elem.Line, elem.Col);
+                } else if (elem is Tag) {
+                    //Console.WriteLine("==========Type2=======");
+                    result.Add(CollectForTag((Tag) elem, ref index));
+                } else if (elem is TagClose) {
+                    throw new VoltException("1Close tag for [" + ((TagClose) elem).Name + "] doesn't have matching start tag. " + elem.Line + "," + elem.Col, elem.Line, elem.Col);
                 } else {
-                    throw new TmplException("Invalid element: [" + elem.GetType().ToString() + "] " + elem.Line + "," + elem.Col, elem.Line, elem.Col);
+                    throw new VoltException("Invalid element: [" + elem.GetType().ToString() + "] " + elem.Line + "," + elem.Col, elem.Line, elem.Col);
                 }
             }
 
@@ -91,85 +113,116 @@ namespace Igs.Hcms.Tmpl
                 return tag;
             }
 
+            _indent = _indent + 4;
+
+            //Console.WriteLine("xxx="+tag.Name);
+
             if (string.Compare(tag.Name, "if", true) == 0) {
-                tag = new IfStatement(tag.Line, tag.Col, tag.AttributeValue("test"));
+                tag = (IfStatement)tag;
             }
 
             Tag collectTag = tag;
 
             for (index++; index < elements.Count; index++) {
                 Token elem = elements[index];
+                //Console.WriteLine("x="+elem.TokenKind);
 
                 if (elem is Text) {
-                    collectTag.InnerTokens.Add(elem);
+                    collectTag.Tokens.Add(elem);
                 } else if (elem is Expression) {
-                    collectTag.InnerTokens.Add(elem);
+                    collectTag.Tokens.Add(elem);
                 } else if (elem is Tag) {
                     Tag innerTag = (Tag) elem;
 
+                    //Console.WriteLine("==="+innerTag.Name);
                     if (string.Compare(innerTag.Name, "else", true) == 0) {
                         if (collectTag is IfStatement) {
                             ((IfStatement) collectTag).FalseBranch = innerTag;
                             collectTag = innerTag;
                         } else {
-                            throw new TmplException("else tag has to be positioned inside of if or elseif tag " + innerTag.Line + "," + innerTag.Col, innerTag.Line, innerTag.Col);
+                            throw new VoltException("else tag has to be positioned inside of if or elseif tag " + innerTag.Line + "," + innerTag.Col, innerTag.Line, innerTag.Col);
                         }
                     } else if (string.Compare(innerTag.Name, "elseif", true) == 0) {
                         if (collectTag is IfStatement) {
-                            Tag newTag = new IfStatement(innerTag.Line, innerTag.Col, innerTag.AttributeValue("test"));
-                            ((IfStatement) collectTag).FalseBranch = newTag;
+
+                            Tag newTag = (IfStatement)innerTag;
+                            ((IfStatement)collectTag).FalseBranch = newTag;
                             collectTag = newTag;
                         } else {
-                            throw new TmplException("elseif tag is not positioned properly" + innerTag.Line + "," + innerTag.Col, innerTag.Line, innerTag.Col);
+                            throw new VoltException("elseif tag is not positioned properly" + innerTag.Line + "," + innerTag.Col, innerTag.Line, innerTag.Col);
                         }
                     } else {
-                        collectTag.InnerTokens.Add(CollectForTag(innerTag, ref index));
+                        collectTag.Tokens.Add(CollectForTag(innerTag, ref index));
                     }
-                } else if (elem is StatementClose) {
-                    StatementClose tagClose = (StatementClose) elem;
 
+                } else if (elem is TagCloseIf) {
+                    TagCloseIf tagClose = (TagCloseIf) elem;
+                    _indent = _indent - 4;
+                    return tag;
+                } else if (elem is TagClose) {
+                    TagClose tagClose = (TagClose) elem;
+                    _indent = _indent - 4;
                     return tag;
                 } else {
-                    throw new TmplException("Invalid element: [" + elem.GetType().ToString() + "] " + elem.Line + "," + elem.Col, elem.Line, elem.Col);
+                    throw new VoltException("Invalid element: [" + elem.GetType().ToString() + "] " + elem.Line + "," + elem.Col, elem.Line, elem.Col);
                 }
             }
 
-            throw new TmplException("Start tag: [" + tag.Name + "] does not have matching end tag." + tag.Line + "," + tag.Col, tag.Line, tag.Col);
+            throw new VoltException("Start tag: [" + tag.Name + "] does not have matching end tag." + tag.Line + "," + tag.Col, tag.Line, tag.Col);
         }
 
         private Token ReadElement()
         {
             switch (Current.TokenKind) {
-            case TokenKind.EOF:
-                return null;
+                case TokenKind.EOF:
+                    return null;
 
-            case TokenKind.TagStart:
-                return ReadTag();
+                case TokenKind.If:
+                    return ReadIfTag();
 
-            case TokenKind.StatementClose:
-                return ReadCloseTag();
+                case TokenKind.ElseIf:
+                    return ReadElseIfTag();
 
-            case TokenKind.ExpStart:
-                return ReadExpression();
+                case TokenKind.TagStart:
+                    return ReadTag();
 
-            case TokenKind.TextData:
-                Text text = new Text(Current.Line, Current.Col, Current.Data);
-                Consume();
-                return text;
+                case TokenKind.EndIf:
+                    return ReadCloseIfTag();
 
-            default:
-                throw new TmplException("Invalid token: " + Current.TokenKind.ToString() + " " + Current.Line + "," + Current.Col, Current.Line, Current.Col);
+                case TokenKind.TagClose:
+                    return ReadCloseTag();
+
+                case TokenKind.ExpStart:
+                    return ReadExpression();
+
+                case TokenKind.TextData:
+                    Text text = new Text(Current.Line, Current.Col, Current.Data);
+                    Consume();
+                    return text;
+
+                default:
+                    throw new VoltException("Invalid token: " + Current.TokenKind.ToString() + " " + Current.Line + "," + Current.Col, Current.Line, Current.Col);
             }
         }
 
-        private StatementClose ReadCloseTag()
+        private TagClose ReadCloseTag()
         {
-            Consume(TokenKind.StatementClose);
+            Consume(TokenKind.TagClose);
 
             Token idToken = Consume(TokenKind.ID);
             Consume(TokenKind.TagEnd);
 
-            return new StatementClose(idToken.Line, idToken.Col, idToken.Data);
+            return new TagClose(idToken.Line, idToken.Col, idToken.Data);
+        }
+
+        private TagCloseIf ReadCloseIfTag()
+        {
+            Consume(TokenKind.EndIf);
+
+            Token idToken = Consume(TokenKind.ID);
+            Consume(TokenKind.TagEnd);
+
+            return new TagCloseIf(idToken.Line, idToken.Col, idToken.Data);
         }
 
         private Expression ReadExpression()
@@ -183,15 +236,128 @@ namespace Igs.Hcms.Tmpl
             return exp;
         }
 
+        private Tag ReadElseIfTag()
+        {
+
+            Consume(TokenKind.ElseIf);
+            Token name = Consume(TokenKind.ID);
+
+            lexer.EnterMode(LexMode.Expression);
+
+            Expression TestExp;
+
+            if (Current.TokenKind == TokenKind.LParen) {
+                TestExp = TopExpression();
+            } else {
+                TestExp = TopExpression();
+            }
+
+            IfStatement tag = new IfStatement(name.Line, name.Col, TestExp);
+            tag.Name = "elseif";
+
+            while (true) {
+                if (Current.TokenKind == TokenKind.TagEnd) {
+                    Consume();
+                    break;
+                } else if (Current.TokenKind == TokenKind.ExpEnd) {
+                    Consume(TokenKind.ExpEnd);
+                } else if (Current.TokenKind == TokenKind.TagEndClose) {
+                    Consume();
+                    tag.IsClosed = true;
+                    break;
+                } else {
+                    throw new VoltException("ElseIf tag Invalid token in tag: " + Current.TokenKind + " " + Current.Line + "," + Current.Col, Current.Line, Current.Col);
+                }
+            }
+
+            return tag;
+
+        }
+
+        private Tag ReadIfTag()
+        {
+
+            Consume(TokenKind.If);
+            Token name = Consume(TokenKind.ID);
+
+            lexer.EnterMode(LexMode.Expression);
+
+            Expression TestExp;
+
+            if (Current.TokenKind == TokenKind.LParen) {
+                TestExp = TopExpression();
+            } else {
+                TestExp = TopExpression();
+            }
+
+            IfStatement tag = new IfStatement(name.Line, name.Col, TestExp);
+            tag.Name = "if";
+
+
+            while (true) {
+                if (Current.TokenKind == TokenKind.TagEnd) {
+                    Consume();
+                    break;
+                } else if (Current.TokenKind == TokenKind.ExpEnd) {
+                    Consume(TokenKind.ExpEnd);
+                } else if (Current.TokenKind == TokenKind.TagEndClose) {
+                    Consume();
+                    tag.IsClosed = true;
+                    break;
+                } else {
+                    throw new VoltException("If tag Invalid token in tag: " + Current.TokenKind + " " + Current.Line + "," + Current.Col, Current.Line, Current.Col);
+                }
+            }
+
+            return tag;
+
+        }
+
         private Tag ReadTag()
         {
             Consume(TokenKind.TagStart);
             Token name = Consume(TokenKind.ID);
             Tag tag = new Tag(name.Line, name.Col, name.Data);
 
+            if (tag.Name == "elseif") {
+                lexer.EnterMode(LexMode.Expression);
+
+                Expression TestExp;
+
+                if (Current.TokenKind == TokenKind.LParen) {
+                    TestExp = TopExpression();
+                } else {
+                    TestExp = TopExpression();
+                }
+
+                tag = new IfStatement(name.Line, name.Col, TestExp);
+            }
+            if (tag.Name == "foreach") {
+                Token _var = Consume(TokenKind.ID);
+
+                Token _in = Consume(TokenKind.ID);
+                if (_in.Data.ToLower()!="in"){
+                    throw new VoltException("foreach expected 'in': " , _in.Line , _in.Col);
+                }
+
+                lexer.EnterMode(LexMode.Expression);
+
+                Expression _ListExp = TopExpression();
+
+                tag.AttributeValue("var"  , new StringLiteral(_var.Line , _var.Col , _var.Data));
+                tag.AttributeValue("list" , _ListExp);
+
+            }
+
             while (true) {
                 if (Current.TokenKind == TokenKind.ID) {
                     tag.Attributes.Add(ReadAttribute());
+                } else if (Current.TokenKind == TokenKind.RParen) {
+                    Consume(TokenKind.RParen);
+                } else if (Current.TokenKind == TokenKind.LParen) {
+                    Consume(TokenKind.LParen);
+                } else if (Current.TokenKind == TokenKind.ExpEnd) {
+                    Consume(TokenKind.ExpEnd);
                 } else if (Current.TokenKind == TokenKind.TagEnd) {
                     Consume();
                     break;
@@ -200,7 +366,7 @@ namespace Igs.Hcms.Tmpl
                     tag.IsClosed = true;
                     break;
                 } else {
-                    throw new TmplException("Invalid token in tag: " + Current.TokenKind + " " + Current.Line + "," + Current.Col, Current.Line, Current.Col);
+                    throw new VoltException("Invalid token in tag: " + Current.TokenKind + " " + Current.Line + "," + Current.Col, Current.Line, Current.Col);
                 }
             }
 
@@ -218,7 +384,7 @@ namespace Igs.Hcms.Tmpl
             if (Current.TokenKind == TokenKind.StringStart) {
                 exp = ReadString();
             } else {
-                throw new TmplException("Unexpected token: " + Current.TokenKind + ". Was expection '\"'" + Current.Line + "," + Current.Col, Current.Line, Current.Col);
+                throw new VoltException("ReadAttribute Unexpected token: " + Current.TokenKind + ". Was expection '\"'" + Current.Line + "," + Current.Col, Current.Line, Current.Col);
             }
 
             return new DotAttribute(name.Data, exp);
@@ -236,14 +402,14 @@ namespace Igs.Hcms.Tmpl
                     Consume();
                     break;
                 } else if (tok.TokenKind == TokenKind.EOF) {
-                    throw new TmplException("Unexpected end of file" + tok.Line + "," + tok.Col, tok.Line, tok.Col);
+                    throw new VoltException("ReadString Unexpected end of file" + tok.Line + "," + tok.Col, tok.Line, tok.Col);
                 } else if (tok.TokenKind == TokenKind.StringText) {
                     Consume();
                     exp.Add(new StringLiteral(tok.Line, tok.Col, tok.Data));
                 } else if (tok.TokenKind == TokenKind.ExpStart) {
                     exp.Add(ReadExpression());
                 } else {
-                    throw new TmplException("Unexpected token in string: " + tok.TokenKind + " " + tok.Line + "," + tok.Col, tok.Line, tok.Col);
+                    throw new VoltException("ReadString Unexpected token in string: " + tok.TokenKind + " " + tok.Line + "," + tok.Col, tok.Line, tok.Col);
                 }
             }
 
@@ -253,7 +419,7 @@ namespace Igs.Hcms.Tmpl
                 return exp;
             }
         }
-
+        //------------------------------------------------------------------------
         private Expression TopExpression()
         {
             return LetExpression();
@@ -271,7 +437,6 @@ namespace Igs.Hcms.Tmpl
 
             return ret;
         }
-
 
         private Expression OrExpression()
         {
@@ -419,23 +584,27 @@ namespace Igs.Hcms.Tmpl
                 }
 
                 return exp;
+
             } else if (Current.TokenKind == TokenKind.Integer) {
                 int value = int.Parse(Current.Data);
                 IntLiteral intLiteral = new IntLiteral(Current.Line, Current.Col, value);
                 Consume();
                 return intLiteral;
+
             } else if (Current.TokenKind == TokenKind.Double) {
                 double value = double.Parse(Current.Data);
                 DoubleLiteral dLiteral = new DoubleLiteral(Current.Line, Current.Col, value);
                 Consume();
                 return dLiteral;
+
             } else if (Current.TokenKind == TokenKind.LParen) {
                 Consume();
                 Expression exp = TopExpression();
                 Consume(TokenKind.RParen);
                 return exp;
+
             } else {
-                throw new TmplException(string.Format("Invalid token in expression: " + Current.TokenKind + ". Was expecting ID or string.L{0}/C{1}", Current.Line, Current.Col), Current.Line, Current.Col);
+                throw new VoltException(string.Format("Invalid token in expression: " + Current.TokenKind + ". Was expecting ID or string.L{0}/C{1}", Current.Line, Current.Col), Current.Line, Current.Col);
             }
         }
 

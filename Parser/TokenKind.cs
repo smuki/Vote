@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Igs.Hcms.Tmpl
+namespace Igs.Hcms.Volt
 {
     public enum TokenKind {
         EOF      ,
@@ -11,49 +11,51 @@ namespace Igs.Hcms.Tmpl
         TextData , //text specific tokens
 
         //tag tokens
-
         If             , // If
         Else           , // Else
-        Text           , // Else
-        Expression     , // Else
-        Foreach        , // @:
-        TagStart       , // @:
-        TagEnd         , // {
-        TagEndClose    , // ~
-        StatementClose , // }~
-        TagEquals      , // =
+        ElseIf         , // ElseIf
+        EndIf          , // EndIf
+        Text           , // Text
+        Expression     , // Expression
+        For            , // For
+        EndFor         , // EndFor
+        Foreach        , // ForEach
+        EndForeach     , // EndForEach
+        TagStart       , // TagStart
+        TagEnd         , // TagEnd
+        TagEndClose    , // TagEndClose
+        TagClose , // TagClose
+        TagEquals      , // TagEquals
 
         //expression
-
         ExpStart         , // # at the beginning
         ExpEnd           , // # at the end
+        LBracket         , // [
+        RBracket         , // ]
         LParen           , // (
         RParen           , // )
         Dot              , // .
-        Comma            , //                    ,
+        Comma            , // Comma
         Integer          , // integer number
         Double           , // double number
         ArrayAccess      , // ArrayAccess
         BinaryExpression , // BinaryExpression
         FCall            , // FCall
-        MCall            , // FCall
+        MCall            , // MCall
         FieldAccess      , // FieldAccess
         StringLiteral    , // FieldAccess
         StringExpression , // FieldAccess
-        LBracket         , // [
-        RBracket         , // ]
 
         //operators
 
-        OpOr    , // "or" keyword
-        OpAnd   , // "and" keyword
-        OpIs    , // "is" keyword
-        OpIsNot , // "isnot" keyword
-        OpLt    , // "lt" keyword
-        OpGt    , // "gt" keyword
-        OpLte   , // "lte" keyword
-        OpGte   , // "gte" keyword
-
+        OpOr     , // "or" keyword
+        OpAnd    , // "and" keyword
+        OpIs     , // "is" keyword
+        OpIsNot  , // "isnot" keyword
+        OpLt     , // "lt" keyword
+        OpGt     , // "gt" keyword
+        OpLte    , // "lte" keyword
+        OpGte    , // "gte" keyword
         OpAdd    , // + keyword
         OpConcat , // & keyword
         OpSub    , // - keyword

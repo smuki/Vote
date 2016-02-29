@@ -6,8 +6,8 @@ using System.Text;
 
 #endregion
 
-using Igs.Hcms.Tmpl.Tokens;
-namespace Igs.Hcms.Tmpl
+using Igs.Hcms.Volt.Tokens;
+namespace Igs.Hcms.Volt
 {
     public interface ITmplHandler {
         void BeforeProcess(TmplManager manager);

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Igs.Hcms.Tmpl
+namespace Igs.Hcms.Volt
 {
 
     public class Token {
