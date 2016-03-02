@@ -350,48 +350,6 @@
 </tr>
 </table>
 
-| 操作符/Function                   | 描述                                  | 例子                                    |
-| --                             | :---                                | :---                                  |
-| +, -                           | 加减法                                 | 100 + a                               |
-| *, /                           | 乘除法                                 | 100 * 2 / (3 % 2)                     |
-| %                              | Mod                                 | 16 % 3                                |
-| ^                              | Power                               | 5.3 ^ 3                               |
-| -                              | 负数                                  | -6 + 10                               |
-| +                              | 合并                                  | "abc" + "def"                         |
-| &                              | 合并                                  | "abc" & "def"                         |
-| ==, !=, <, >, <=, >=           | 比较                                  | 2.5 > 100                             |
-| And, Or                        | 逻辑                                  | (1 > 10) and (true or not false)      |
-| not(boolvalue)                 | 逻辑                                  | not(true or not false)                |
-| IIf                            | 条件                                  | IIf(a > 100, "greater", "less")       |
-| .                              | 成员                                  | varA.varB.function("a")               |
-| String                         | 文字                                  | "string!"                             |
-| number                         | 数字                                  | 100+97.21                             |
-| Boolean                        | 逻辑类型                                | true AND false                        |
-| isnull(object)                 | 检测object是否为null                     | isnull(var)                           |
-| isnullorempty(string)          | 检测 string 是否为null或空                 | isnullorempty(var)                    |
-| isnotempty(string)             | 检测string是否为空                        | isnotempty(var)                       |
-| toupper(string)                | 将string转为大写字母                       | toupper(var)                          |
-| tolower(string)                | 将string转为小写字母                       | tolower(var)                          |
-| trim(string)                   | 删除string后的空格                        | trim(var)                             |
-| len(string)                    | 返回string的长度                         | len(var)                              |
-| cint(value)                    | 将value 转为 integer                   | cint(var)                             |
-| cdouble(value)                 | 将value 转为 double                    | cdouble(var)                          |
-| cdate(value)                   | 将value 转为 datetime                  | cdate(var)                            |
-| isnumber(num)                  | 检测num是否为数字                          | isnumber(var)                         |
-| isdefined(varname)             | 检测varname 是否已经定义                    | isdefined(varname)                    |
-| ifdefined(varname,varname)     | 如果varname 已经定义，这返回varname的值，否则范围空白  | ifdefined("varname",varname)          |
-| typeof(object)                 | 返回object 的类型                        | typeof(object)                        |
-| format(object,formatstring)    | 调用object的 Tostring(formatstring) 方法 | format(object)                        |
-| replace(string,f1,r1)          | 将string中的f1替换为r1                    | replace("a apple","apple","orange")   |
-| round(value,decimal,opt)       | 对value做4舍5入，小数位为decimal             | round(3.456,2)                        |
-| indexof(value,find)            | 查找find 在value第一次出现的位置               | indexof("one,two,tree","two")         |
-| join(list,property,separator)  | 用separator将array的元素property合并为一个字符串 | join(list,",")/join(list,"name",","   |
-| split(string,sep1,sep2)        | 根据sep1,sep2将string分拆为一个array        | split("one,two,tree,four",",")        |
-| sweep(string,s1,s2,s3)         | 剔除string中包含的s1,s2,s3                | sweep("o,t,x,f","t","f")              |
-| filter(mylist,booleanproperty) | 返回一个所有booleanproperty为true的列表       | filter(mylist,"display")              |
-| typeref(type)                  | 创建一个reference 类型                    | TypeRef("System.Math").Round(3.39789) |
-
-
 ###语句:###
 
 **IF**
