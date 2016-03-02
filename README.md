@@ -150,6 +150,206 @@
 
 下表是Engine的操作符和Function:
 
+<table>
+<thead>
+<tr>
+  <th>操作符/Function</th>
+  <th style="text-align:left;">描述</th>
+  <th style="text-align:left;">例子</th>
+</tr>
+</thead>
+<tr>
+  <td>+, -</td>
+  <td style="text-align:left;">加减法</td>
+  <td style="text-align:left;">100 + a</td>
+</tr>
+<tr>
+  <td>*, /</td>
+  <td style="text-align:left;">乘除法</td>
+  <td style="text-align:left;">100 * 2 / (3 % 2)</td>
+</tr>
+<tr>
+  <td>%</td>
+  <td style="text-align:left;">Mod</td>
+  <td style="text-align:left;">16 % 3</td>
+</tr>
+<tr>
+  <td>^</td>
+  <td style="text-align:left;">Power</td>
+  <td style="text-align:left;">5.3 ^ 3</td>
+</tr>
+<tr>
+  <td>-</td>
+  <td style="text-align:left;">负数</td>
+  <td style="text-align:left;">-6 + 10</td>
+</tr>
+<tr>
+  <td>+</td>
+  <td style="text-align:left;">合并</td>
+  <td style="text-align:left;">&#8220;abc&#8221; + &#8220;def&#8221;</td>
+</tr>
+<tr>
+  <td>&amp;</td>
+  <td style="text-align:left;">合并</td>
+  <td style="text-align:left;">&#8220;abc&#8221; &amp; &#8220;def&#8221;</td>
+</tr>
+<tr>
+  <td>==, !=, &lt;, >, &lt;=, >=</td>
+  <td style="text-align:left;">比较</td>
+  <td style="text-align:left;">2.5 > 100</td>
+</tr>
+<tr>
+  <td>And, Or</td>
+  <td style="text-align:left;">逻辑</td>
+  <td style="text-align:left;">(1 > 10) and (true or not false)</td>
+</tr>
+<tr>
+  <td>not(boolvalue)</td>
+  <td style="text-align:left;">逻辑</td>
+  <td style="text-align:left;">not(true or not false)</td>
+</tr>
+<tr>
+  <td>IIf</td>
+  <td style="text-align:left;">条件</td>
+  <td style="text-align:left;">IIf(a > 100, &#8220;greater&#8221;, &#8220;less&#8221;)</td>
+</tr>
+<tr>
+  <td>.</td>
+  <td style="text-align:left;">成员</td>
+  <td style="text-align:left;">varA.varB.function(&#8221;a&#8221;)</td>
+</tr>
+<tr>
+  <td>String</td>
+  <td style="text-align:left;">文字</td>
+  <td style="text-align:left;">&#8220;string!&#8221;</td>
+</tr>
+<tr>
+  <td>number</td>
+  <td style="text-align:left;">数字</td>
+  <td style="text-align:left;">100+97.21</td>
+</tr>
+<tr>
+  <td>Boolean</td>
+  <td style="text-align:left;">逻辑类型</td>
+  <td style="text-align:left;">true AND false</td>
+</tr>
+<tr>
+  <td>isnull(object)</td>
+  <td style="text-align:left;">检测object是否为null</td>
+  <td style="text-align:left;">isnull(var)</td>
+</tr>
+<tr>
+  <td>isnullorempty(string)</td>
+  <td style="text-align:left;">检测 string 是否为null或空</td>
+  <td style="text-align:left;">isnullorempty(var)</td>
+</tr>
+<tr>
+  <td>isnotempty(string)</td>
+  <td style="text-align:left;">检测string是否为空</td>
+  <td style="text-align:left;">isnotempty(var)</td>
+</tr>
+<tr>
+  <td>toupper(string)</td>
+  <td style="text-align:left;">将string转为大写字母</td>
+  <td style="text-align:left;">toupper(var)</td>
+</tr>
+<tr>
+  <td>tolower(string)</td>
+  <td style="text-align:left;">将string转为小写字母</td>
+  <td style="text-align:left;">tolower(var)</td>
+</tr>
+<tr>
+  <td>trim(string)</td>
+  <td style="text-align:left;">删除string后的空格</td>
+  <td style="text-align:left;">trim(var)</td>
+</tr>
+<tr>
+  <td>len(string)</td>
+  <td style="text-align:left;">返回string的长度</td>
+  <td style="text-align:left;">len(var)</td>
+</tr>
+<tr>
+  <td>cint(value)</td>
+  <td style="text-align:left;">将value 转为 integer</td>
+  <td style="text-align:left;">cint(var)</td>
+</tr>
+<tr>
+  <td>cdouble(value)</td>
+  <td style="text-align:left;">将value 转为 double</td>
+  <td style="text-align:left;">cdouble(var)</td>
+</tr>
+<tr>
+  <td>cdate(value)</td>
+  <td style="text-align:left;">将value 转为 datetime</td>
+  <td style="text-align:left;">cdate(var)</td>
+</tr>
+<tr>
+  <td>isnumber(num)</td>
+  <td style="text-align:left;">检测num是否为数字</td>
+  <td style="text-align:left;">isnumber(var)</td>
+</tr>
+<tr>
+  <td>isdefined(varname)</td>
+  <td style="text-align:left;">检测varname 是否已经定义</td>
+  <td style="text-align:left;">isdefined(varname)</td>
+</tr>
+<tr>
+  <td>ifdefined(varname,varname)</td>
+  <td style="text-align:left;">如果varname 已经定义，这返回varname的值，否则范围空白</td>
+  <td style="text-align:left;">ifdefined(&#8221;varname&#8221;,varname)</td>
+</tr>
+<tr>
+  <td>typeof(object)</td>
+  <td style="text-align:left;">返回object 的类型</td>
+  <td style="text-align:left;">typeof(object)</td>
+</tr>
+<tr>
+  <td>format(object,formatstring)</td>
+  <td style="text-align:left;">调用object的 Tostring(formatstring) 方法</td>
+  <td style="text-align:left;">format(object)</td>
+</tr>
+<tr>
+  <td>replace(string,f1,r1)</td>
+  <td style="text-align:left;">将string中的f1替换为r1</td>
+  <td style="text-align:left;">replace(&#8221;a apple&#8221;,&#8221;apple&#8221;,&#8221;orange&#8221;)</td>
+</tr>
+<tr>
+  <td>round(value,decimal,opt)</td>
+  <td style="text-align:left;">对value做4舍5入，小数位为decimal</td>
+  <td style="text-align:left;">round(3.456,2)</td>
+</tr>
+<tr>
+  <td>indexof(value,find)</td>
+  <td style="text-align:left;">查找find 在value第一次出现的位置</td>
+  <td style="text-align:left;">indexof(&#8221;one,two,tree&#8221;,&#8221;two&#8221;)</td>
+</tr>
+<tr>
+  <td>join(list,property,separator)</td>
+  <td style="text-align:left;">用separator将array的元素property合并为一个字符串</td>
+  <td style="text-align:left;">join(list,&#8221;,&#8221;)/join(list,&#8221;name&#8221;,&#8221;,&#8221;</td>
+</tr>
+<tr>
+  <td>split(string,sep1,sep2)</td>
+  <td style="text-align:left;">根据sep1,sep2将string分拆为一个array</td>
+  <td style="text-align:left;">split(&#8221;one,two,tree,four&#8221;,&#8221;,&#8221;)</td>
+</tr>
+<tr>
+  <td>sweep(string,s1,s2,s3)</td>
+  <td style="text-align:left;">剔除string中包含的s1,s2,s3</td>
+  <td style="text-align:left;">sweep(&#8221;o,t,x,f&#8221;,&#8221;t&#8221;,&#8221;f&#8221;)</td>
+</tr>
+<tr>
+  <td>filter(mylist,booleanproperty)</td>
+  <td style="text-align:left;">返回一个所有booleanproperty为true的列表</td>
+  <td style="text-align:left;">filter(mylist,&#8221;display&#8221;)</td>
+</tr>
+<tr>
+  <td>typeref(type)</td>
+  <td style="text-align:left;">创建一个reference 类型</td>
+  <td style="text-align:left;">TypeRef(&#8221;System.Math&#8221;).Round(3.39789)</td>
+</tr>
+</table>
+
 | 操作符/Function                   | 描述                                  | 例子                                    |
 | --                             | :---                                | :---                                  |
 | +, -                           | 加减法                                 | 100 + a                               |
