@@ -12,10 +12,10 @@ using System.Reflection;
 namespace Igs.Hcms.Volt
 {
     internal static class Logical {
-        private static TmplManager _mnr;
+        private static VoltEngine _mnr;
         private static Templates _Templates;
 
-        public static void Register(TmplManager mn, Templates _tpl)
+        public static void Register(VoltEngine mn, Templates _tpl)
         {
             _mnr       = mn;
             _Templates = _tpl;
@@ -467,7 +467,7 @@ namespace Igs.Hcms.Volt
                 if (args.Length == 2) { // do not evalulate property
                     sb.Append(ienum.Current);
                 } else {
-                    sb.Append(TmplManager.ProcessProperty(ienum.Current, property));
+                    sb.Append(VoltEngine.ProcessProperty(ienum.Current, property));
                 }
 
                 index++;
@@ -561,7 +561,7 @@ namespace Igs.Hcms.Volt
             List<object> newList = new List<object>();
 
             while (ienum.MoveNext()) {
-                object val = TmplManager.ProcessProperty(ienum.Current, property);
+                object val = VoltEngine.ProcessProperty(ienum.Current, property);
 
                 if (val is bool && (bool) val) {
                     newList.Add(ienum.Current);

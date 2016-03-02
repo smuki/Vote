@@ -15,16 +15,17 @@
 </pre>
 - 3.
 <pre class="CODE">
-    @if (order.shipcountry != "HK"){
+    @if (test="${order.shipcountry != "HK"}"){
        你的快件将会在1-2个星期到达。
+}@elseif (test="${order.shipcountry != "HK"}"){
     }@else{
        你的快件将会在2-6天到达。
     }~if
 </pre>
 - 4.
 <pre class="CODE">
-	@foreach cust in list{
-	    ${_index_}: ${cust.lastname}, ${cust.firstname}
+	@foreach (list="${list}" var="cust" index="i"){
+	    ${i}: ${cust.lastname}, ${cust.firstname}
 	}~foreach
 </pre>
 
@@ -79,24 +80,11 @@
 
 ###表达式###
 
-方式A 表达式用${ 开头 } 结尾,或$后跟随一个变量
-方式B 多行表达式。
+表达式用${ 开头 } 结尾:
 
 例如.
 <pre class="CODE">
 	${firstName}
-</pre>
-或
-<pre class="CODE">
-	$firstName
-</pre>
-
-<pre class="CODE">
-	${
-        i=1;
-        i=i+1;
-    }
-   total: $i
 </pre>
 
 这个例子讲输出firstname的内容. 如果你想输出字符 $ ,只需使用双$,如 $$.
@@ -116,7 +104,6 @@
 
 <pre class="CODE">
 	${somestring.Lengt}
-	$somestring.Lengt
 </pre>
 
 变量属性名是不区分大小写的.所以你可以: ${string.length} 或 ${string.LENGTH}
@@ -212,21 +199,21 @@
 你可以根据表达式条件输出文本:
 
 <pre class="CODE">
-    @if (booleanexpression){
+    @if (test="${booleanexpression}"){
 
-    }@elseif (bool){
+    }@elseif (test="${bool}"){
 
     }@else{
 
     }~if
 </pre>
 
-elseif 和 else 是可选的 . 如果 条件为 true, if 下的块将输出.
+elseif 和 else 是可选的 . 如果 test 的计算结果为 true, if 下的快将输出.
 
 例子:
 
 <pre class="CODE">
-@if (cust.country == "HK"){
+@if (test="${cust.country == "HK"}"){
     你是来自香港的客户.
 }@else{
     你来自:${cust.country}.
@@ -238,8 +225,8 @@ elseif 和 else 是可选的 . 如果 条件为 true, if 下的块将输出.
 
 你可以使用FOREACH遍历列表的所有元素.
 <pre class="CODE">
-@foreach cust in list{
-    ${_index_}: ${cust.lastname}, ${cust.firstname}
+@foreach (list="${list}" var="cust" index="i"){
+    ${i}: ${cust.lastname}, ${cust.firstname}
 }~foreach
 </pre>
 

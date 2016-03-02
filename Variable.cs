@@ -7,37 +7,46 @@ using System.Text;
 namespace Igs.Hcms.Volt
 {
     internal class Variable {
-        private Variable parent;
-        private Dictionary<string, object> values;
+        private Variable _parent;
+        private Dictionary<string, object> _values;
 
         public Variable() : this(null)
         {
+            _values["true"]  = true;
+            _values["false"] = false;
+            _values["null"]  = null;
         }
 
         public Variable(Variable parent)
         {
-            this.parent = parent;
-            this.values = new Dictionary<string, object> (StringComparer.InvariantCultureIgnoreCase);
+            _parent = parent;
+            _values = new Dictionary<string, object> (StringComparer.InvariantCultureIgnoreCase);
+            _values["true"]  = true;
+            _values["false"] = false;
+            _values["null"]  = null;
         }
 
         public void Clear()
         {
-            values.Clear();
+            _values.Clear();
+            _values["true"]  = true;
+            _values["false"] = false;
+            _values["null"]  = null;
         }
 
         public Variable Parent
         {
             get {
-                return parent;
+                return _parent;
             }
         }
 
         public bool IsDefined(string name)
         {
-            if (values.ContainsKey(name)) {
+            if (_values.ContainsKey(name)) {
                 return true;
-            } else if (parent != null) {
-                return parent.IsDefined(name);
+            } else if (_parent != null) {
+                return _parent.IsDefined(name);
             } else {
                 return false;
             }
@@ -46,17 +55,17 @@ namespace Igs.Hcms.Volt
         public object this[string name]
         {
             get {
-                if (!values.ContainsKey(name)) {
-                    if (parent != null) {
-                        return parent[name];
+                if (!_values.ContainsKey(name)) {
+                    if (_parent != null) {
+                        return _parent[name];
                     } else {
                         return null;
                     }
                 } else {
-                    return values[name];
+                    return _values[name];
                 }
             } set {
-                values[name] = value;
+                _values[name] = value;
             }
         }
 

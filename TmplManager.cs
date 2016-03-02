@@ -13,8 +13,8 @@ namespace Igs.Hcms.Volt
 
     public delegate object FunctionDefinition(object[] args);
 
-    public class TmplManager {
-        const string ZFILE_NAME = "TmplManager";
+    public class VoltEngine {
+        const string ZFILE_NAME = "VoltEngine";
 
         private static readonly object _PENDING = new object();
         private bool _silentErrors;
@@ -41,7 +41,7 @@ namespace Igs.Hcms.Volt
         public string DebugFile         { get { return _debugFile;    } set { _debugFile    = value; }  }
         public IDbConnection Connection { get { return _connection;   } set { _connection   = value; }  }
 
-        public TmplManager(Volt tmpl)
+        public VoltEngine(Volt tmpl)
         {
             _mainTmpl    = tmpl;
             _currentTmpl = tmpl;
@@ -51,15 +51,15 @@ namespace Igs.Hcms.Volt
             Initialize();
         }
 
-        public static TmplManager Parser(string name, string tmpl)
+        public static VoltEngine Parser(string name, string tmpl)
         {
             Volt iTmpl = Volt.Parser(name , tmpl);
-            return new TmplManager(iTmpl);
+            return new VoltEngine(iTmpl);
         }
 
-        public static TmplManager Parser(string tmpl)
+        public static VoltEngine Parser(string tmpl)
         {
-            return TmplManager.Parser("", tmpl);
+            return VoltEngine.Parser("", tmpl);
         }
 
         private Dictionary<string, ITmplHandler> CustomTags
@@ -184,7 +184,7 @@ namespace Igs.Hcms.Volt
 
         public string Evaluate(string expression)
         {
-            TmplManager Volt    = TmplManager.Parser("${" + expression + "}");
+            VoltEngine Volt    = VoltEngine.Parser("${" + expression + "}");
             StringWriter writer = new StringWriter();
             Volt.Process(writer);
             return writer.ToString();

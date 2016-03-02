@@ -15,10 +15,12 @@
 </pre>
 - 3.
 <pre class="CODE">
-    @if (order.shipcountry != "HK"){
-       你的快件将会在1-2个星期到达。
-    }@else{
+    @if (order.shipcountry == "HK"){
+       你的快件将会在1个星期到达。
+    }@elseif (order.shipcountry == "SZ"){
        你的快件将会在2-6天到达。
+    }@else{
+       你的快件将会在1-2个星期到达。
     }~if
 </pre>
 - 4.
@@ -27,7 +29,6 @@
 	    ${_index_}: ${cust.lastname}, ${cust.firstname}
 	}~foreach
 </pre>
-
 
 ###模板可以包含如下元素###
 
@@ -41,18 +42,17 @@
 
 下面是引擎两个主要的类:
 
-1. Tmpl
+1. Volt
 2. TmplManager.
 
 
-下面是 Tmpl or TmplManager 的简单用法:
+下面是 Volt or TmplManager 的简单用法:
 
 <pre class="CODE">
-    Tmpl template = Tmpl.LoadString(string name, string data)
-	Tmpl template = Tmpl.LoadFile(string name, string filename)
+    Volt template = TmplManager.Parser(string name, string data)
 </pre>
 
- TmplManager的使用方法.
+TmplManager的使用方法.
 
 <pre class="CODE">
     TmplManager mngr = new TmplManager(template);
@@ -61,11 +61,10 @@
 或更简单:
 
 <pre class="CODE">
-    TmplManager mngr = TmplManager.LoadFile(filename);
-    TmplManager mngr = TmplManager.LoadString(template);
+    TmplManager mngr = TmplManager.Parser(template);
 </pre>
 
-当你使用 LoadString ,可以直接使用字符串的内容为模板不必使用模板文件
+当你使用 Parser ,可以直接使用字符串的内容为模板不必使用模板文件
 
 使用 SetValue(string name, object value); 之后可以在模板内使用这不变量.
 
@@ -84,7 +83,7 @@
 
 例如.
 <pre class="CODE">
-	${firstName}
+  ${firstName}
 </pre>
 或
 <pre class="CODE">
@@ -110,6 +109,8 @@
 
 <pre class="CODE">
 	${somevar}
+	$somevar
+	$somevar.ToString()
 </pre>
 
 输出变量的属性:
