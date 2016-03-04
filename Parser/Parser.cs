@@ -7,21 +7,23 @@ using Igs.Hcms.Volt.Tokens;
 namespace Igs.Hcms.Volt
 {
     internal class Parser {
-        private Lexer lexer;
+        private Lexer _lexer;
         private Token current;
-        private List<Token> elements;
+        private List<Token> _elements;
         private int _indent = 0;
+        private Stack<string> _level;
 
         public Parser(Lexer lexer)
         {
-            this.lexer    = lexer;
-            this.elements = new List<Token>();
+            _level        = new Stack<string>();
+            _lexer        = lexer;
+            _elements = new List<Token>();
         }
 
         private Token Consume()
         {
             Token old = current;
-            current = lexer.Next();
+            current   = _lexer.Next();
 
             if (old != null) {
                 Print(old);
@@ -31,18 +33,18 @@ namespace Igs.Hcms.Volt
 
         private void Print(Token t)
         {
-//           Console.WriteLine("");
-//           Console.Write(t.TokenKind);
-//           Console.Write("  ");
-//           Console.Write(lexer._currentMode);
-//           Console.WriteLine("        "+t.Data);
+            //Console.WriteLine("");
+            //Console.Write(t.TokenKind);
+            //Console.Write("  ");
+            //Console.Write(_lexer._currentMode);
+            //Console.WriteLine("        "+t.Data);
 
         }
 
         private Token Consume(TokenKind kind)
         {
             Token old = current;
-            current = lexer.Next();
+            current = _lexer.Next();
             Print(old);
 
             if (old.TokenKind != kind) {
@@ -61,7 +63,7 @@ namespace Igs.Hcms.Volt
 
         public List<Token> Parse()
         {
-            elements.Clear();
+            _elements.Clear();
             Consume();
 
             while (true) {
@@ -70,19 +72,19 @@ namespace Igs.Hcms.Volt
                 if (elem == null) {
                     break;
                 } else {
-                    elements.Add(elem);
+                    _elements.Add(elem);
                 }
             }
 
-            return elements;
+            return _elements;
         }
 
         internal List<Token> CreateHierarchy()
         {
             List<Token> result = new List<Token>();
 
-            for (int index = 0; index < elements.Count; index++) {
-                Token elem = elements[index];
+            for (int index = 0; index < _elements.Count; index++) {
+                Token elem = _elements[index];
 
                 //Console.WriteLine("==========xxx======="+elem.TokenKind);
 
@@ -115,7 +117,10 @@ namespace Igs.Hcms.Volt
 
             _indent = _indent + 4;
 
-            //Console.WriteLine("xxx="+tag.Name);
+            if (tag.Name=="if" || tag.Name=="foreach" || tag.Name=="using" || tag.Name=="define" || tag.Name=="for") {
+                //Console.WriteLine(" in "+tag.Name);
+                _level.Push(tag.Name);
+            }
 
             if (string.Compare(tag.Name, "if", true) == 0) {
                 tag = (IfStatement)tag;
@@ -123,8 +128,8 @@ namespace Igs.Hcms.Volt
 
             Tag collectTag = tag;
 
-            for (index++; index < elements.Count; index++) {
-                Token elem = elements[index];
+            for (index++; index < _elements.Count; index++) {
+                Token elem = _elements[index];
                 //Console.WriteLine("x="+elem.TokenKind);
 
                 if (elem is Text) {
@@ -155,13 +160,10 @@ namespace Igs.Hcms.Volt
                         collectTag.Tokens.Add(CollectForTag(innerTag, ref index));
                     }
 
-                } else if (elem is TagCloseIf) {
-                    TagCloseIf tagClose = (TagCloseIf) elem;
-                    _indent = _indent - 4;
-                    return tag;
                 } else if (elem is TagClose) {
                     TagClose tagClose = (TagClose) elem;
                     _indent = _indent - 4;
+                    _level.Pop();
                     return tag;
                 } else {
                     throw new VoltException("Invalid element: [" + elem.GetType().ToString() + "] " + elem.Line + "," + elem.Col, elem.Line, elem.Col);
@@ -186,9 +188,6 @@ namespace Igs.Hcms.Volt
                 case TokenKind.TagStart:
                     return ReadTag();
 
-                case TokenKind.EndIf:
-                    return ReadCloseIfTag();
-
                 case TokenKind.TagClose:
                     return ReadCloseTag();
 
@@ -207,22 +206,14 @@ namespace Igs.Hcms.Volt
 
         private TagClose ReadCloseTag()
         {
-            Consume(TokenKind.TagClose);
+            Token idToken = Consume(TokenKind.TagClose);
 
-            Token idToken = Consume(TokenKind.ID);
+            if (Current.TokenKind == TokenKind.ID) {
+                idToken = Consume(TokenKind.ID);
+            }
             Consume(TokenKind.TagEnd);
 
             return new TagClose(idToken.Line, idToken.Col, idToken.Data);
-        }
-
-        private TagCloseIf ReadCloseIfTag()
-        {
-            Consume(TokenKind.EndIf);
-
-            Token idToken = Consume(TokenKind.ID);
-            Consume(TokenKind.TagEnd);
-
-            return new TagCloseIf(idToken.Line, idToken.Col, idToken.Data);
         }
 
         private Expression ReadExpression()
@@ -242,7 +233,7 @@ namespace Igs.Hcms.Volt
             Consume(TokenKind.ElseIf);
             Token name = Consume(TokenKind.ID);
 
-            lexer.EnterMode(LexMode.Expression);
+            _lexer.EnterMode(LexMode.Expression);
 
             Expression TestExp;
 
@@ -280,7 +271,7 @@ namespace Igs.Hcms.Volt
             Consume(TokenKind.If);
             Token name = Consume(TokenKind.ID);
 
-            lexer.EnterMode(LexMode.Expression);
+            _lexer.EnterMode(LexMode.Expression);
 
             Expression TestExp;
 
@@ -320,7 +311,7 @@ namespace Igs.Hcms.Volt
             Tag tag = new Tag(name.Line, name.Col, name.Data);
 
             if (tag.Name == "elseif") {
-                lexer.EnterMode(LexMode.Expression);
+                _lexer.EnterMode(LexMode.Expression);
 
                 Expression TestExp;
 
@@ -331,8 +322,7 @@ namespace Igs.Hcms.Volt
                 }
 
                 tag = new IfStatement(name.Line, name.Col, TestExp);
-            }
-            if (tag.Name == "foreach") {
+            }else if (tag.Name == "foreach") {
                 Token _var = Consume(TokenKind.ID);
 
                 Token _in = Consume(TokenKind.ID);
@@ -340,13 +330,22 @@ namespace Igs.Hcms.Volt
                     throw new VoltException("foreach expected 'in': " , _in.Line , _in.Col);
                 }
 
-                lexer.EnterMode(LexMode.Expression);
+                _lexer.EnterMode(LexMode.Expression);
 
                 Expression _ListExp = TopExpression();
 
                 tag.AttributeValue("var"  , new StringLiteral(_var.Line , _var.Col , _var.Data));
                 tag.AttributeValue("list" , _ListExp);
 
+            }else if (tag.Name == "define") {
+                Token _var = Consume(TokenKind.ID);
+
+                tag.AttributeValue("name"  , new StringLiteral(_var.Line , _var.Col , _var.Data));
+
+            }else if (tag.Name == "using") {
+                Token _var = Consume(TokenKind.ID);
+
+                tag.AttributeValue("tmpl"  , new StringLiteral(_var.Line , _var.Col , _var.Data));
             }
 
             while (true) {

@@ -701,7 +701,6 @@ namespace Igs.Hcms.Volt
 
                 bool _f_tag_start = false;
                 bool _f_tag_end   = false;
-                bool _if_tag_end  = false;
                 int eat_tag_start = 1;
                 int eat_tag_end   = 1;
 
@@ -737,25 +736,15 @@ namespace Igs.Hcms.Volt
                 } else if (LA(0) == '~') {
 
                     if (Peek(4).ToLower() == "~if ") {
-
                         _f_tag_end  = true;
-                        _if_tag_end = true;
-
                     } else if (Peek(8).ToLower() == "~foreach") {
-
                         _f_tag_end = true;
                     } else if (Peek(5).ToLower() == "~for") {
-
                         _f_tag_end = true;
-
                     } else if (Peek(7).ToLower() == "~define") {
-
                         _f_tag_end = true;
-
                     } else if (Peek(6).ToLower() == "~using") {
-
                         _f_tag_end = true;
-
                     }
 
                 } else if (LA(0) == '}') {
@@ -802,11 +791,7 @@ namespace Igs.Hcms.Volt
                         Consume(eat_tag_end);
                         EnterMode(LexMode.Tag);
 
-                        if (_if_tag_end) {
-                            return NewToken(TokenKind.EndIf);
-                        } else {
-                            return NewToken(TokenKind.TagClose);
-                        }
+                        return NewToken(TokenKind.TagClose);
                     } else {
                         break;
                     }

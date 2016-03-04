@@ -35,7 +35,6 @@
                 <include name="Tokens\StringLiteral.cs" />
                 <include name="Tokens\Tag.cs" />
                 <include name="Tokens\TagClose.cs" />
-                <include name="Tokens\TagCloseIf.cs" />
                 <include name="Tokens\Text.cs" />
                 <include name="Parser\Lexer.cs" />
                 <include name="Parser\Parser.cs" />
@@ -46,7 +45,7 @@
                 <include name="Extensions\EntityCompiler.cs" />
                 <include name="Extensions\Logical.cs" />
                 <include name="ITmplHandler.cs" />
-                <include name="TmplManager.cs" />
+                <include name="VoltEngine.cs" />
                 <include name="Volt.cs" />
                 <include name="VoltException.cs" />
                 <include name="Util.cs" />
