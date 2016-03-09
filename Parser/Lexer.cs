@@ -11,8 +11,6 @@ namespace Igs.Hcms.Volt
         If,
         ElseIf,
         Else,
-        ForEach,
-        For,
         Expression,
         String
     }
@@ -701,8 +699,7 @@ namespace Igs.Hcms.Volt
 
                 bool _f_tag_start = false;
                 bool _f_tag_end   = false;
-                int eat_tag_start = 1;
-                int eat_tag_end   = 1;
+                int eat_char      = 1;
 
                 LexMode _Mode = LexMode.Text;
 
@@ -711,7 +708,7 @@ namespace Igs.Hcms.Volt
                     goto StartTextRead;
                 } else if (LA(0) == _PREFIX) {
                     if (LA(1) == '{') {
-                        eat_tag_start = 2;
+                        eat_char = 2;
                         _f_tag_start  = true;
 
                     } else if (Peek(8).ToLower() == _PREFIX + "define ") {
@@ -722,57 +719,39 @@ namespace Igs.Hcms.Volt
 
                     } else if (Peek(5).ToLower() == _PREFIX + "for ") {
                         _f_tag_start = true;
-                        _Mode = LexMode.For;
 
                     } else if (Peek(4).ToLower() == _PREFIX + "if ") {
                         _f_tag_start = true;
                         _Mode = LexMode.If;
                     } else if (Peek(9).ToLower() == _PREFIX + "foreach ") {
                         _f_tag_start = true;
-                        _Mode = LexMode.ForEach;
                     } else if (Peek(5).ToLower() == _PREFIX + "else") {
                         _f_tag_start = true;
                     }
-                } else if (LA(0) == '~') {
-
-                    if (Peek(4).ToLower() == "~if ") {
-                        _f_tag_end  = true;
-                    } else if (Peek(8).ToLower() == "~foreach") {
-                        _f_tag_end = true;
-                    } else if (Peek(5).ToLower() == "~for") {
-                        _f_tag_end = true;
-                    } else if (Peek(7).ToLower() == "~define") {
-                        _f_tag_end = true;
-                    } else if (Peek(6).ToLower() == "~using") {
-                        _f_tag_end = true;
-                    }
-
                 } else if (LA(0) == '}') {
-                    if (LA(1) == '~') {
-                        eat_tag_end = 2;
-                        _f_tag_end = true;
-                    } else if (Peek(9).ToLower() == "}" + _PREFIX + "elseif ") {
-                        eat_tag_start = 2;
+                    if (Peek(9).ToLower() == "}" + _PREFIX + "elseif ") {
+                        eat_char = 2;
                         _f_tag_start = true;
                         _Mode = LexMode.ElseIf;
                     } else if (Peek(6).ToLower() == "}" + _PREFIX + "else") {
-                        eat_tag_start = 2;
+                        eat_char = 2;
                         _f_tag_start = true;
-
-                    } else   if (LA(1) == '~' && LA(2) == '{' && (LA(3) == 'e' || LA(3) == 'E')) {
-                        eat_tag_start = 3;
+                    } else if (LA(1) == _PREFIX && LA(2) == '{' && (LA(3) == 'e' || LA(3) == 'E')) {
+                        eat_char = 3;
                         _f_tag_start = true;
+                    } else if (LA(1) == _PREFIX && (LA(2)=='\t' || LA(2)=='\n' || LA(2)=='\r' || LA(2)==' ') ) {
+                        eat_char = 2;
+                        _f_tag_end = true;
                     }
                 }
 
                 if (_f_tag_start) {
                     if (_save_pos == _pos) {
-                        if (eat_tag_start == 0) {
+                        if (eat_char == 0) {
                             Consume();
                         } else {
-                            Consume(eat_tag_start);
+                            Consume(eat_char);
                         }
-
                         if (_Mode == LexMode.If) {
                             EnterMode(LexMode.If);
                             return NewToken(TokenKind.If);
@@ -788,7 +767,11 @@ namespace Igs.Hcms.Volt
                     }
                 } else if (_f_tag_end) {
                     if (_save_pos == _pos) {
-                        Consume(eat_tag_end);
+                        if (eat_char == 0) {
+                            Consume();
+                        } else {
+                            Consume(eat_char);
+                        }
                         EnterMode(LexMode.Tag);
 
                         return NewToken(TokenKind.TagClose);

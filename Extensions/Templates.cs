@@ -10,11 +10,11 @@ using System.Threading;
 namespace Igs.Hcms.Volt
 {
     public class Templates {
-        public Dictionary<string, List<string>> _Regions = new Dictionary<string, List<string>>();
-        private Dictionary<string, string> _RegionNames  = new Dictionary<string, string>();
-        private Dictionary<string, string> _TriggerNames = new Dictionary<string, string>();
-        private Dictionary<string, bool> _RegionFiles    = new Dictionary<string, bool>();
-        private Dictionary<string, int> _UsingRegion     = new Dictionary<string, int>();
+        public Dictionary<string, List<string>> _Regions = new Dictionary<string, List<string>>(StringComparer.CurrentCultureIgnoreCase);
+        private Dictionary<string, string> _RegionNames  = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
+        private Dictionary<string, string> _TriggerNames = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
+        private Dictionary<string, bool> _RegionFiles    = new Dictionary<string, bool>(StringComparer.CurrentCultureIgnoreCase);
+        private Dictionary<string, int> _UsingRegion     = new Dictionary<string, int>(StringComparer.CurrentCultureIgnoreCase);
 
         private object _PENDING      = new object();
         private string _appPath      = "";
@@ -79,15 +79,16 @@ namespace Igs.Hcms.Volt
         public void UsingRegion(string _RegionName , int Initialize = 1)
         {
 
+            string _s=_RegionName.ToLower();
             if (Initialize==0){
-                if (!_UsingRegion.ContainsKey(_RegionName)) {
-                    _UsingRegion[_RegionName] = 0;
+                if (!_UsingRegion.ContainsKey(_s)) {
+                    _UsingRegion[_s] = 0;
                 }
             }else{
-                if (_UsingRegion.ContainsKey(_RegionName)) {
-                    _UsingRegion[_RegionName] = _UsingRegion[_RegionName]+1;
+                if (_UsingRegion.ContainsKey(_s)) {
+                    _UsingRegion[_s] = _UsingRegion[_s]+1;
                 }else{
-                    _UsingRegion[_RegionName] = 1;
+                    _UsingRegion[_s] = 1;
                 }
             }
         }
@@ -401,7 +402,7 @@ namespace Igs.Hcms.Volt
                                     _Region_Data.Add("//=====******" +_Region_FileName + cUID_CODE);
                                     _Regions[(cUID_CODE + "_t_" + _region_name).ToLower()] = _Region_Data;
 
-                                    UsingRegion((cUID_CODE + "_t_" + _region_name).ToLower() , 0);
+                                    UsingRegion(cUID_CODE + "_t_" + _region_name , 0);
 
                                     _region_name  = "";
                                     _l            = 0;
@@ -441,8 +442,8 @@ namespace Igs.Hcms.Volt
                                             }
 
                                         } else {
-                                            _Regions[_t_name] = new List<string>();;
-                                            UsingRegion(_t_name , 0);
+                                            _Regions[_name] = new List<string>();;
+                                            UsingRegion(_name , 0);
                                         }
                                     } else {
                                         _Region_Data.Add(cc);

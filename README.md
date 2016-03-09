@@ -21,13 +21,13 @@
        你的快件将会在1个星期到达。
     }@else{
        你的快件将会在1-2个星期到达。
-    }~
+    }@
 </pre>
 - 4.
 <pre class="CODE">
 	@foreach cust in list {
 	    ${_index_}: ${cust.lastname}, ${cust.firstname}
-	}~
+	}@
 </pre>
 
 
@@ -375,7 +375,7 @@
 
     }@else{
 
-    }~
+    }@
 </pre>
 
 elseif 和 else 是可选的 . 如果 test 的计算结果为 true, if 下的快将输出.
@@ -387,7 +387,7 @@ elseif 和 else 是可选的 . 如果 test 的计算结果为 true, if 下的快
     你是来自深圳的客户.
 }@else{
     你来自:${cust.country}.
-}~
+}@
 </pre>
 如果 cust.country 是 "HK" 就输出: 你是来自香港的客户.
 
@@ -397,7 +397,7 @@ elseif 和 else 是可选的 . 如果 test 的计算结果为 true, if 下的快
 <pre class="CODE">
 @foreach cust in list){
     ${_index_}: ${cust.lastname}, ${cust.firstname}
-}~
+}@
 </pre>
 _index_ 是默认的变量
 
@@ -416,7 +416,7 @@ _index_ 是默认的变量
 <pre class="CODE">
 @for (from="1" to="10" index="i"){
     ${i}: ${customers[i].name}
-}~for
+}@
 </pre>
 
 **Custom Templates:**
@@ -427,7 +427,7 @@ _index_ 是默认的变量
 
 @define customer_template {
     ${customer.lastname}, ${customer.firstname}
-}~
+}@
 
 @using customer_template customer="${cust}" ~
 
@@ -444,7 +444,7 @@ The template also received special variable: innerText that is the content of ex
 <pre class="CODE">
 @define bold {
 ${innerText}
-}~
+}@
 
 @using bold {${cust.lastname}, ${cust.firstname}}~using
 </pre>
@@ -464,10 +464,10 @@ Jackson, Tom
 @define doit {
 	@define colorme {
 	  font color=${color}${innerText}
-	}~
+	}@
 
     @using colorme color="blue"){colorize me}~using
-}~
+}@
 </pre>
 colorme 模板之可以在doit 模板内使用.
 
