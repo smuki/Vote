@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using System.Reflection;
 #endregion
 
-namespace Igs.Hcms.Volt
+namespace Volte.Bot.Volt
 {
     internal static class Logical {
         private static VoltEngine _mnr;

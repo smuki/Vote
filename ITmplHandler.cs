@@ -6,8 +6,8 @@ using System.Text;
 
 #endregion
 
-using Igs.Hcms.Volt.Tokens;
-namespace Igs.Hcms.Volt
+using Volte.Bot.Volt.Tokens;
+namespace Volte.Bot.Volt
 {
     public interface ITmplHandler {
         void BeforeProcess(VoltEngine manager);

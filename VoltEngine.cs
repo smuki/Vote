@@ -6,9 +6,9 @@ using System.Data;
 using System.Reflection;
 using System.IO;
 
-using Igs.Hcms.Volt.Tokens;
+using Volte.Bot.Volt.Tokens;
 
-namespace Igs.Hcms.Volt
+namespace Volte.Bot.Volt
 {
 
     public delegate object FunctionDefinition(object[] args);
@@ -319,7 +319,7 @@ namespace Igs.Hcms.Volt
             IComparable c2;
 
             switch (exp.Operator) {
-            case Igs.Hcms.Volt.TokenKind.OpOr:
+            case Volte.Bot.Volt.TokenKind.OpOr:
 
                 lhsValue = EvalExpression(exp.Lhs);
 
@@ -330,7 +330,7 @@ namespace Igs.Hcms.Volt
                 rhsValue = EvalExpression(exp.Rhs);
                 return Util.ToBoolean(rhsValue);
 
-            case Igs.Hcms.Volt.TokenKind.OpLet:
+            case Volte.Bot.Volt.TokenKind.OpLet:
 
                 lhsValue = exp.Lhs;
 
@@ -355,7 +355,7 @@ namespace Igs.Hcms.Volt
                     throw new VoltException("variable name." + lhsValue.ToString(), exp.Line, exp.Col);
                 }
 
-            case Igs.Hcms.Volt.TokenKind.OpAnd:
+            case Volte.Bot.Volt.TokenKind.OpAnd:
 
                 lhsValue = EvalExpression(exp.Lhs);
 
@@ -366,7 +366,7 @@ namespace Igs.Hcms.Volt
                 rhsValue = EvalExpression(exp.Rhs);
                 return Util.ToBoolean(rhsValue);
 
-            case Igs.Hcms.Volt.TokenKind.OpIs:
+            case Volte.Bot.Volt.TokenKind.OpIs:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -392,14 +392,14 @@ namespace Igs.Hcms.Volt
                     return c1.CompareTo(c2) == 0;
                 }
 
-            case Igs.Hcms.Volt.TokenKind.OpIsNot:
+            case Volte.Bot.Volt.TokenKind.OpIsNot:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
 
                 return !lhsValue.Equals(rhsValue);
 
-            case Igs.Hcms.Volt.TokenKind.OpGt:
+            case Volte.Bot.Volt.TokenKind.OpGt:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -413,7 +413,7 @@ namespace Igs.Hcms.Volt
                     return c1.CompareTo(c2) == 1;
                 }
 
-            case Igs.Hcms.Volt.TokenKind.OpAdd:
+            case Volte.Bot.Volt.TokenKind.OpAdd:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -434,7 +434,7 @@ namespace Igs.Hcms.Volt
                     return Convert.ToDouble(lhsValue) + Convert.ToDouble(rhsValue);
                 }
 
-            case Igs.Hcms.Volt.TokenKind.OpConcat:
+            case Volte.Bot.Volt.TokenKind.OpConcat:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -445,7 +445,7 @@ namespace Igs.Hcms.Volt
                     return lhsValue.ToString() + rhsValue.ToString();
                 }
 
-            case Igs.Hcms.Volt.TokenKind.OpMul:
+            case Volte.Bot.Volt.TokenKind.OpMul:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -464,7 +464,7 @@ namespace Igs.Hcms.Volt
                     return Convert.ToDouble(lhsValue) * Convert.ToDouble(rhsValue);
                 }
 
-            case Igs.Hcms.Volt.TokenKind.OpDiv:
+            case Volte.Bot.Volt.TokenKind.OpDiv:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -483,7 +483,7 @@ namespace Igs.Hcms.Volt
                     return Convert.ToDouble(lhsValue) / Convert.ToDouble(rhsValue);
                 }
 
-            case Igs.Hcms.Volt.TokenKind.OpMod:
+            case Volte.Bot.Volt.TokenKind.OpMod:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -502,7 +502,7 @@ namespace Igs.Hcms.Volt
                     return Convert.ToDouble(lhsValue) % Convert.ToDouble(rhsValue);
                 }
 
-            case Igs.Hcms.Volt.TokenKind.OpPow:
+            case Volte.Bot.Volt.TokenKind.OpPow:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -521,7 +521,7 @@ namespace Igs.Hcms.Volt
                     return Math.Pow(Convert.ToDouble(lhsValue) , Convert.ToDouble(rhsValue));
                 }
 
-            case Igs.Hcms.Volt.TokenKind.OpLt:
+            case Volte.Bot.Volt.TokenKind.OpLt:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -545,7 +545,7 @@ namespace Igs.Hcms.Volt
                     return c1.CompareTo(c2) == -1;
                 }
 
-            case Igs.Hcms.Volt.TokenKind.OpGte:
+            case Volte.Bot.Volt.TokenKind.OpGte:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -569,7 +569,7 @@ namespace Igs.Hcms.Volt
                     return c1.CompareTo(c2) >= 0;
                 }
 
-            case Igs.Hcms.Volt.TokenKind.OpLte:
+            case Volte.Bot.Volt.TokenKind.OpLte:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);

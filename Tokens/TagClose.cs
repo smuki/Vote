@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Igs.Hcms.Volt.Tokens
+namespace Volte.Bot.Volt.Tokens
 {
     public class TagClose : Token {
         private string _name;

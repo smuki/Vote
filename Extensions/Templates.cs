@@ -7,7 +7,7 @@ using System.Xml;
 using System.IO;
 using System.Threading;
 
-namespace Igs.Hcms.Volt
+namespace Volte.Bot.Volt
 {
     public class Templates {
         public Dictionary<string, List<string>> _Regions = new Dictionary<string, List<string>>(StringComparer.CurrentCultureIgnoreCase);

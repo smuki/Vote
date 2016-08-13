@@ -5,9 +5,9 @@ using System.Text;
 using System.IO;
 #endregion
 
-using Igs.Hcms.Volt.Tokens;
+using Volte.Bot.Volt.Tokens;
 
-namespace Igs.Hcms.Volt
+namespace Volte.Bot.Volt
 {
     public class Volt {
         private string _name;
@@ -92,7 +92,7 @@ namespace Igs.Hcms.Volt
             }
         }
 
-        public Igs.Hcms.Volt.Volt Parent
+        public Volte.Bot.Volt.Volt Parent
         {
             get {
                 return _parent;
@@ -110,7 +110,7 @@ namespace Igs.Hcms.Volt
             }
         }
 
-        public Dictionary<string, Igs.Hcms.Volt.Volt> Tmpls
+        public Dictionary<string, Volte.Bot.Volt.Volt> Tmpls
         {
             get {
                 return _tmpls;

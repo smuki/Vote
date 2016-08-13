@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-using Igs.Hcms.Volt.Tokens;
+using Volte.Bot.Volt.Tokens;
 
-namespace Igs.Hcms.Volt
+namespace Volte.Bot.Volt
 {
     internal class Parser {
         private Lexer _lexer;

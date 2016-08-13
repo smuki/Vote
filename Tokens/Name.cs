@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Igs.Hcms.Volt.Tokens
+namespace Volte.Bot.Volt.Tokens
 {
     internal class Name : Expression {
         private string _id;

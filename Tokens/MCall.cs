@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Igs.Hcms.Volt.Tokens
+namespace Volte.Bot.Volt.Tokens
 {
     //MethodCall
     internal class MCall : Expression {

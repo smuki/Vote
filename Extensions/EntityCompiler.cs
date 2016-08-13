@@ -1,4 +1,4 @@
-﻿namespace Igs.Hcms.Volt
+﻿namespace Volte.Bot.Volt
 {
     using System;
     using System.CodeDom.Compiler;
@@ -57,7 +57,7 @@
             _code.AppendLine("using System.Text;");
             _code.AppendLine("using System.Configuration;");
 
-            _code.AppendLine("namespace Igs.Hcms.Object{");
+            _code.AppendLine("namespace Volte.Bot.Object{");
 
             _code.AppendLine("public class Entity" + className + ": EntityObject {");
 
@@ -187,7 +187,7 @@
                 _Assembly = result.CompiledAssembly;
             }
 
-            string typeName = "Igs.Hcms.StreamObject.Retrieve" + entitykey;
+            string typeName = "Volte.Bot.StreamObject.Retrieve" + entitykey;
             Type type = _Assembly.GetType(typeName);
 
             MyDelegate handler = (MyDelegate) Delegate.CreateDelegate(typeof(MyDelegate), type, "ReadWhileLoop");

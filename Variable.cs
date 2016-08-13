@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 #endregion
 
-namespace Igs.Hcms.Volt
+namespace Volte.Bot.Volt
 {
     internal class Variable {
         private Variable _parent;

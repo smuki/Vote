@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 
-namespace Igs.Hcms.Volt
+namespace Volte.Bot.Volt
 {
     enum LexMode {
         Text,

@@ -1,6 +1,6 @@
 using System;
 
-namespace Igs.Hcms.Volt
+namespace Volte.Bot.Volt
 {
     class TypeRef {
         readonly Type _type;

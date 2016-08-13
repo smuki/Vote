@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 #endregion
 
-namespace Igs.Hcms.Volt
+namespace Volte.Bot.Volt
 {
     internal static class Util {
         private static readonly Regex _RegexVarName = new Regex("^[a-zA-Z_][a-zA-Z0-9_]*$" , RegexOptions.Compiled);
