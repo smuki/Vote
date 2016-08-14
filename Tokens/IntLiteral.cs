@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Volte.Bot.Volt.Tokens
+namespace Volte.Bot.Tpl.Tokens
 {
     internal class IntLiteral : Expression {
         private int _value;

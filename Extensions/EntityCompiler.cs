@@ -1,4 +1,4 @@
-﻿namespace Volte.Bot.Volt
+﻿namespace Volte.Bot.Tpl
 {
     using System;
     using System.CodeDom.Compiler;

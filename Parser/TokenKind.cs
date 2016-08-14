@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Volte.Bot.Volt
+namespace Volte.Bot.Tpl
 {
     public enum TokenKind {
         EOF      ,

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 #endregion
 
-namespace Volte.Bot.Volt.Tokens
+namespace Volte.Bot.Tpl.Tokens
 {
     public abstract class Expression : Token {
 

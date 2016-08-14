@@ -5,9 +5,9 @@ using System.Text;
 using System.IO;
 #endregion
 
-using Volte.Bot.Volt.Tokens;
+using Volte.Bot.Tpl.Tokens;
 
-namespace Volte.Bot.Volt
+namespace Volte.Bot.Tpl
 {
     public class Volt {
         private string _name;
@@ -92,7 +92,7 @@ namespace Volte.Bot.Volt
             }
         }
 
-        public Volte.Bot.Volt.Volt Parent
+        public Volte.Bot.Tpl.Volt Parent
         {
             get {
                 return _parent;
@@ -110,7 +110,7 @@ namespace Volte.Bot.Volt
             }
         }
 
-        public Dictionary<string, Volte.Bot.Volt.Volt> Tmpls
+        public Dictionary<string, Volte.Bot.Tpl.Volt> Tmpls
         {
             get {
                 return _tmpls;

@@ -1,6 +1,6 @@
 using System;
 
-namespace Volte.Bot.Volt
+namespace Volte.Bot.Tpl
 {
     class TypeRef {
         readonly Type _type;
