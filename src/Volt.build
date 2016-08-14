@@ -8,9 +8,9 @@
 
     <target name="Volt">
         <property name="unsafe" value="true" />
-        <delete file="${environment::get-variable('TRUNK_PATH')}\dist\Volte.Bot.Tpl.dll" failonerror="false" />
-        <delete file="${environment::get-variable('TRUNK_PATH')}\dist\Volte.Bot.Tpl.pdb" failonerror="false" />
-        <csc target="library" output="${environment::get-variable('TRUNK_PATH')}\dist\Volte.Bot.Tpl.dll" debug="${debug}" unsafe="${unsafe}">
+        <delete file="..\dist\Volte.Bot.Tpl.dll" failonerror="false" />
+        <delete file="..\dist\Volte.Bot.Tpl.pdb" failonerror="false" />
+        <csc target="library" output="..\dist\Volte.Bot.Tpl.dll" debug="${debug}" unsafe="${unsafe}">
             <nowarn>
                 <!-- do not report deprecation warnings -->
                 <warning number="0618" />

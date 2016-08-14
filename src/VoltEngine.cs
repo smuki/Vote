@@ -319,7 +319,7 @@ namespace Volte.Bot.Tpl
             IComparable c2;
 
             switch (exp.Operator) {
-            case Volte.Bot.Tpl.TokenKind.OpOr:
+            case TokenKind.OpOr:
 
                 lhsValue = EvalExpression(exp.Lhs);
 
@@ -330,7 +330,7 @@ namespace Volte.Bot.Tpl
                 rhsValue = EvalExpression(exp.Rhs);
                 return Util.ToBoolean(rhsValue);
 
-            case Volte.Bot.Tpl.TokenKind.OpLet:
+            case TokenKind.OpLet:
 
                 lhsValue = exp.Lhs;
 
@@ -355,7 +355,7 @@ namespace Volte.Bot.Tpl
                     throw new VoltException("variable name." + lhsValue.ToString(), exp.Line, exp.Col);
                 }
 
-            case Volte.Bot.Tpl.TokenKind.OpAnd:
+            case TokenKind.OpAnd:
 
                 lhsValue = EvalExpression(exp.Lhs);
 
@@ -366,7 +366,7 @@ namespace Volte.Bot.Tpl
                 rhsValue = EvalExpression(exp.Rhs);
                 return Util.ToBoolean(rhsValue);
 
-            case Volte.Bot.Tpl.TokenKind.OpIs:
+            case TokenKind.OpIs:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -392,14 +392,14 @@ namespace Volte.Bot.Tpl
                     return c1.CompareTo(c2) == 0;
                 }
 
-            case Volte.Bot.Tpl.TokenKind.OpIsNot:
+            case TokenKind.OpIsNot:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
 
                 return !lhsValue.Equals(rhsValue);
 
-            case Volte.Bot.Tpl.TokenKind.OpGt:
+            case TokenKind.OpGt:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -413,7 +413,7 @@ namespace Volte.Bot.Tpl
                     return c1.CompareTo(c2) == 1;
                 }
 
-            case Volte.Bot.Tpl.TokenKind.OpAdd:
+            case TokenKind.OpAdd:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -434,7 +434,7 @@ namespace Volte.Bot.Tpl
                     return Convert.ToDouble(lhsValue) + Convert.ToDouble(rhsValue);
                 }
 
-            case Volte.Bot.Tpl.TokenKind.OpConcat:
+            case TokenKind.OpConcat:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -445,7 +445,7 @@ namespace Volte.Bot.Tpl
                     return lhsValue.ToString() + rhsValue.ToString();
                 }
 
-            case Volte.Bot.Tpl.TokenKind.OpMul:
+            case TokenKind.OpMul:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -464,7 +464,7 @@ namespace Volte.Bot.Tpl
                     return Convert.ToDouble(lhsValue) * Convert.ToDouble(rhsValue);
                 }
 
-            case Volte.Bot.Tpl.TokenKind.OpDiv:
+            case TokenKind.OpDiv:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -483,7 +483,7 @@ namespace Volte.Bot.Tpl
                     return Convert.ToDouble(lhsValue) / Convert.ToDouble(rhsValue);
                 }
 
-            case Volte.Bot.Tpl.TokenKind.OpMod:
+            case TokenKind.OpMod:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -502,7 +502,7 @@ namespace Volte.Bot.Tpl
                     return Convert.ToDouble(lhsValue) % Convert.ToDouble(rhsValue);
                 }
 
-            case Volte.Bot.Tpl.TokenKind.OpPow:
+            case TokenKind.OpPow:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -521,7 +521,7 @@ namespace Volte.Bot.Tpl
                     return Math.Pow(Convert.ToDouble(lhsValue) , Convert.ToDouble(rhsValue));
                 }
 
-            case Volte.Bot.Tpl.TokenKind.OpLt:
+            case TokenKind.OpLt:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -545,7 +545,7 @@ namespace Volte.Bot.Tpl
                     return c1.CompareTo(c2) == -1;
                 }
 
-            case Volte.Bot.Tpl.TokenKind.OpGte:
+            case TokenKind.OpGte:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
@@ -569,7 +569,7 @@ namespace Volte.Bot.Tpl
                     return c1.CompareTo(c2) >= 0;
                 }
 
-            case Volte.Bot.Tpl.TokenKind.OpLte:
+            case TokenKind.OpLte:
 
                 lhsValue = EvalExpression(exp.Lhs);
                 rhsValue = EvalExpression(exp.Rhs);
