@@ -8,9 +8,9 @@
 
     <target name="Volt">
         <property name="unsafe" value="true" />
-        <delete file="${environment::get-variable('TRUNK_PATH')}\dist\Igs.Hcms.Volt.dll" failonerror="false" />
-        <delete file="${environment::get-variable('TRUNK_PATH')}\dist\Igs.Hcms.Volt.pdb" failonerror="false" />
-        <csc target="library" output="${environment::get-variable('TRUNK_PATH')}\dist\Igs.Hcms.Volt.dll" debug="${debug}" unsafe="${unsafe}">
+        <delete file="${environment::get-variable('TRUNK_PATH')}\dist\Volte.Bot.Volt.dll" failonerror="false" />
+        <delete file="${environment::get-variable('TRUNK_PATH')}\dist\Volte.Bot.Volt.pdb" failonerror="false" />
+        <csc target="library" output="${environment::get-variable('TRUNK_PATH')}\dist\Volte.Bot.Volt.dll" debug="${debug}" unsafe="${unsafe}">
             <nowarn>
                 <!-- do not report deprecation warnings -->
                 <warning number="0618" />
@@ -52,9 +52,6 @@
                 <include name="Variable.cs" />
 
             </sources>
-            <references>
-                <include name = "${environment::get-variable('TRUNK_PATH')}\dist\Igs.Hcms.Dapper.dll" />
-            </references>
         </csc>
     </target>
 </project>
