@@ -55,10 +55,11 @@ namespace Volte.Bot.Volt
 #if CSHARP30
             _mnr.RegisterFunction("query"         , FuncQuery);
 #endif
-            _mnr.RegisterFunction("readfile"      , FuncReadFile);
-            _mnr.RegisterFunction("writefile"     , FuncWriteFile);
-            _mnr.RegisterFunction("write"         , FuncWrite);
-            _mnr.RegisterFunction("writeline"     , FuncWriteLine);
+            _mnr.RegisterFunction("readfile"   , FuncReadFile);
+            _mnr.RegisterFunction("writefile"  , FuncWriteFile);
+            _mnr.RegisterFunction("write"      , FuncWrite);
+            _mnr.RegisterFunction("writeline"  , FuncWriteLine);
+            _mnr.RegisterFunction("HTMLEnCode" , FuncHTMLEnCode);
         }
 
         private static object FuncWrite(object[] args)
@@ -70,6 +71,47 @@ namespace Volte.Bot.Volt
             _mnr.WriteValue(args[0]);
 
             return "";
+        }
+
+        private static object FuncHTMLEnCode(object[] args)
+        {
+            if (!_mnr.CheckArgCount(1, "writeline", args)) {
+                return null;
+            }
+
+            string text = args[0].ToString();
+
+            StringBuilder _s = new StringBuilder();
+
+            foreach (char ch in text) {
+                switch (ch) {
+                case '\'':
+                    _s.Append("&apos;");
+                    break;
+
+                case '<':
+                    _s.Append("&lt;");
+                    break;
+
+                case '>':
+                    _s.Append("&gt;");
+                    break;
+
+                case '"':
+                    _s.Append("&quot;");
+                    break;
+
+                case '&':
+                    _s.Append("&amp;");
+                    break;
+
+                default:
+                    _s.Append(ch);
+                    break;
+                }
+            }
+
+            return _s.ToString();
         }
 
         private static object FuncWriteLine(object[] args)
@@ -374,14 +416,18 @@ namespace Volte.Bot.Volt
 
         private static object FuncIfVariable(object[] args)
         {
-            if (!_mnr.CheckArgCount(1, "ifvariable", args)) {
+            if (!_mnr.CheckArgCount(1,2, "ifvariable", args)) {
                 return null;
             }
 
             if (_mnr.IsDefined(args[0].ToString())) {
                 return _mnr.GetValue(args[0].ToString());
             } else {
-                return string.Empty;
+                if (args.Length == 2) {
+                    return args[1];
+                }else{
+                    return string.Empty;
+                }
             }
 
         }

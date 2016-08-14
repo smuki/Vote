@@ -231,6 +231,10 @@ namespace Volte.Bot.Volt
 
         public string Parse(string cUID_CODE, List<string> cData)
         {
+            if (_UID_CODE == "") {
+                _UID_CODE = cUID_CODE;
+            }
+
             StringBuilder _Data = new StringBuilder();
 
             foreach (string ss in cData) {
@@ -413,7 +417,7 @@ namespace Volte.Bot.Volt
 
                                     if (_t_name != "") {
 
-                                        string sUID_CODE = cUID_CODE;
+                                        string sUID_CODE = _UID_CODE;
 
                                         this.ParseName(ref sUID_CODE,ref _t_name);
 

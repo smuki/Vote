@@ -57,8 +57,7 @@ namespace Volte.Bot.Volt.Tokens
                 }
 
                 return _name;
-            }
-            set {
+            } set {
                 _name = value;
             }
         }

@@ -389,7 +389,7 @@ elseif 和 else 是可选的 . 如果 test 的计算结果为 true, if 下的快
     你来自:${cust.country}.
 }@
 </pre>
-如果 cust.country 是 "HK" 就输出: 你是来自香港的客户.
+如果 cust.country 是 "SZ" 就输出: 你是来自深圳的客户.
 
 **FOREACH**
 
