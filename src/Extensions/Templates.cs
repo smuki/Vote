@@ -124,7 +124,9 @@ namespace Volte.Bot.Tpl
                 List<string> _Data = new List<string>();
 
                 string _t_path = Path.GetDirectoryName(cFileName);
+                if (_t_path.LastIndexOf('\\')>0){
                 _DirPath       = _t_path.Substring(0, _t_path.LastIndexOf('\\'));
+                }
                 int _line      = 0;
                 bool _script   = false;
                 _XmlFile       = false;
@@ -135,8 +137,7 @@ namespace Volte.Bot.Tpl
 
                     while ((_ss = sr.ReadLine()) != null) {
                         string _s = _ss;
-                        if (_line<=3 )
-                        {
+                        if (_line <= 3) {
                             if (_ss.IndexOf("<?xml") >= 0) {
                                 _XmlFile=true;
                             }
@@ -181,6 +182,16 @@ namespace Volte.Bot.Tpl
             }
 
             return Parse(cUID_CODE, _Data);
+        }
+        public bool HasRegion(string sUID_CODE, string name)
+        {
+            List<string> _X_Region_Code = this.getRegion(sUID_CODE, name);
+            Console.WriteLine(sUID_CODE+"="+name+_X_Region_Code.Count);
+            if (_X_Region_Code.Count>0){
+                return true;
+            }else{
+                return false;
+            }
         }
 
         private string getRegionName(string cUID_CODE, string _data)
