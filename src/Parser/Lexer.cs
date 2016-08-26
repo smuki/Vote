@@ -883,6 +883,38 @@ namespace Volte.Bot.Tpl
             }
         }
 
+        private void SkipToEndOfLine()
+        {
+            bool eat = true;
+
+            while (eat && _pos < _data.Length) {
+                char ret = _data[_pos];
+
+                if (ret == '\n') {
+                    Consume();
+
+                    if (LA(0) == '\r') {
+                        Consume();
+                    }
+
+                    NewLine();
+                    eat = false;
+                } else if (ret == '\r') {
+                    Consume();
+
+                    if (LA(0) == '\n') {
+                        Consume();
+                    }
+
+                    NewLine();
+                    eat = false;
+                } else {
+                    Consume();
+                    eat = true;
+                }
+            }
+        }
+
         private void SkipWhiteToEndOfLine()
         {
             bool eat = true;
