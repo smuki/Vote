@@ -186,7 +186,11 @@ namespace Volte.Bot.Tpl
         public bool HasRegion(string sUID_CODE, string name)
         {
             List<string> _X_Region_Code = this.getRegion(sUID_CODE, name);
-            return _X_Region_Code.Count>0;
+            if (_X_Region_Code.Count>0){
+                return true;
+            }else{
+                return false;
+            }
         }
 
         private string getRegionName(string cUID_CODE, string _data)
