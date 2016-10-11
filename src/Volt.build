@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0"?>
 <project name="Framework" default="build">
-    <property name="build.dir" value="${environment::get-variable('TRUNK_PATH')}\dist" />
+    <property name="build.dir" value=".\dist" />
     <property name="debug" value="true" />
     <property name="unsafe" value="true" />
     <target name="build" depends="Volt">
