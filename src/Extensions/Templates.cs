@@ -125,7 +125,7 @@ namespace Volte.Bot.Tpl
 
                 string _t_path = Path.GetDirectoryName(cFileName);
                 if (_t_path.LastIndexOf('\\')>0){
-                _DirPath       = _t_path.Substring(0, _t_path.LastIndexOf('\\'));
+                    _DirPath       = _t_path.Substring(0, _t_path.LastIndexOf('\\'));
                 }
                 int _line      = 0;
                 bool _script   = false;
@@ -200,10 +200,18 @@ namespace Volte.Bot.Tpl
             }
 
             if (_data.Length > 5) {
+                bool flag=false;
                 int _bef_position = _data.IndexOf("@{") + 2;
+                if (_bef_position <=1) {
+                    _bef_position = _data.IndexOf("<@{") + 3;
+                    flag=true;
+                }
 
                 if (_bef_position >= 2) {
                     int _aft_position = _data.IndexOf("}", _bef_position);
+                    if(flag){
+                        _aft_position = _data.IndexOf("}/>", _bef_position);
+                    }
 
                     if (_aft_position > 0) {
                         string s = _data.Substring(_bef_position, _aft_position - _bef_position);
@@ -219,6 +227,7 @@ namespace Volte.Bot.Tpl
                         return s;
                     }
                 }
+
             }
 
             return "";
@@ -407,11 +416,18 @@ namespace Volte.Bot.Tpl
                                     _region_name = ss.Replace(" ", "");
                                     _Region_Data = new List<string>();
 
-                                } else if (cc.IndexOf("#endregion</T>") == 0 && _region_name == "") {
+                                }else if (cc.IndexOf("<T ") == 0 && cc.IndexOf(">")>4) {
+
+                                    string ss    = cc.Replace("<T ", "");
+                                    ss           = ss.Replace(">", "");
+                                    _region_name = ss.Replace(" ", "");
+                                    _Region_Data = new List<string>();
+
+                                } else if ((cc.IndexOf("</T>") == 0 || cc.IndexOf("#endregion</T>") == 0) && _region_name == "") {
 
                                     Console.WriteLine(_Region_FileName + " invlid region " + cc + " in " + _l);
 
-                                } else if (cc.IndexOf("#endregion</T>") == 0 && _region_name != "") {
+                                } else if ((cc.IndexOf("</T>") == 0 ||  cc.IndexOf("#endregion</T>") == 0) && _region_name != "") {
 
                                     _Region_Data.Add("//=====******" +_Region_FileName + cUID_CODE);
                                     _Regions[(cUID_CODE + "_t_" + _region_name).ToLower()] = _Region_Data;
