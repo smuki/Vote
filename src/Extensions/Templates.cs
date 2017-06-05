@@ -26,7 +26,7 @@ namespace Volte.Bot.Tpl
         private string _debugMode    = "N";
         private string _Lang         = "02";
         private string _regionPath   = "";
-        private string _extensions   = ".tpl;.cs;.shtml";
+        private string _extensions   = ".tpl;.cs;.txt;.shtml";
 
         public string AppPath      { get { return _appPath;      } set { _appPath      = value; }  }
         public string UID_CODE     { get { return _UID_CODE;     } set { _UID_CODE     = value; }  }
