@@ -97,23 +97,27 @@ namespace Volte.Bot.Tpl
 
         private void Initialize()
         {
-            _fnTbl     = new Dictionary<string, FunctionDefinition> (StringComparer.InvariantCultureIgnoreCase);
-            _variables = new Variable();
+            lock (_PENDING) {
+                _fnTbl     = new Dictionary<string, FunctionDefinition> (StringComparer.InvariantCultureIgnoreCase);
+                _variables = new Variable();
 
-            _variables["true"]  = true;
-            _variables["false"] = false;
-            _variables["null"]  = null;
+                _variables["true"]  = true;
+                _variables["false"] = false;
+                _variables["null"]  = null;
 
-            _Templates = new Templates();
+                _Templates = new Templates();
 
-            Logical.Register(this, _Templates);
+                Logical.Register(this, _Templates);
+            }
 
         }
-        #region Functions
+#region Functions
 
         public void RegisterFunction(string functionName, FunctionDefinition fn)
         {
-            _fnTbl.Add(functionName, new FunctionDefinition(fn));
+            lock (_PENDING) {
+                _fnTbl[functionName] = new FunctionDefinition(fn);
+            }
         }
 
         internal bool CheckArgCount(int count, string funcName, object[] args)
@@ -136,7 +140,7 @@ namespace Volte.Bot.Tpl
                 return true;
             }
         }
-        #endregion
+#endregion
 
         public bool IsDefined(string name)
         {
@@ -319,282 +323,282 @@ namespace Volte.Bot.Tpl
             IComparable c2;
 
             switch (exp.Operator) {
-            case TokenKind.OpOr:
+                case TokenKind.OpOr:
 
-                lhsValue = EvalExpression(exp.Lhs);
+                    lhsValue = EvalExpression(exp.Lhs);
 
-                if (Util.ToBoolean(lhsValue)) {
-                    return true;
-                }
+                    if (Util.ToBoolean(lhsValue)) {
+                        return true;
+                    }
 
-                rhsValue = EvalExpression(exp.Rhs);
-                return Util.ToBoolean(rhsValue);
+                    rhsValue = EvalExpression(exp.Rhs);
+                    return Util.ToBoolean(rhsValue);
 
-            case TokenKind.OpLet:
+                case TokenKind.OpLet:
 
-                lhsValue = exp.Lhs;
+                    lhsValue = exp.Lhs;
 
-                if (exp.Lhs is Name) {
-                    string _Name = ((Name) exp.Lhs).Id;
-                    rhsValue     = EvalExpression(exp.Rhs);
-                    this.SetValue(_Name, rhsValue);
-                    return string.Empty;
+                    if (exp.Lhs is Name) {
+                        string _Name = ((Name) exp.Lhs).Id;
+                        rhsValue     = EvalExpression(exp.Rhs);
+                        this.SetValue(_Name, rhsValue);
+                        return string.Empty;
 
-                } else if (exp.Lhs is FieldAccess) {
+                    } else if (exp.Lhs is FieldAccess) {
 
-                    FieldAccess fa      = (FieldAccess)exp.Lhs;
-                    rhsValue            = EvalExpression(exp.Rhs);
-                    object obj          = EvalExpression(fa.Exp);
-                    string propertyName = fa.Field;
+                        FieldAccess fa      = (FieldAccess)exp.Lhs;
+                        rhsValue            = EvalExpression(exp.Rhs);
+                        object obj          = EvalExpression(fa.Exp);
+                        string propertyName = fa.Field;
 
-                    setProperty(obj , propertyName , rhsValue);
+                        setProperty(obj , propertyName , rhsValue);
 
-                    return string.Empty;
+                        return string.Empty;
 
-                } else {
-                    throw new VoltException("variable name." + lhsValue.ToString(), exp.Line, exp.Col);
-                }
+                    } else {
+                        throw new VoltException("variable name." + lhsValue.ToString(), exp.Line, exp.Col);
+                    }
 
-            case TokenKind.OpAnd:
+                case TokenKind.OpAnd:
 
-                lhsValue = EvalExpression(exp.Lhs);
+                    lhsValue = EvalExpression(exp.Lhs);
 
-                if (!Util.ToBoolean(lhsValue)) {
-                    return false;
-                }
+                    if (!Util.ToBoolean(lhsValue)) {
+                        return false;
+                    }
 
-                rhsValue = EvalExpression(exp.Rhs);
-                return Util.ToBoolean(rhsValue);
+                    rhsValue = EvalExpression(exp.Rhs);
+                    return Util.ToBoolean(rhsValue);
 
-            case TokenKind.OpIs:
+                case TokenKind.OpIs:
 
-                lhsValue = EvalExpression(exp.Lhs);
-                rhsValue = EvalExpression(exp.Rhs);
+                    lhsValue = EvalExpression(exp.Lhs);
+                    rhsValue = EvalExpression(exp.Rhs);
 
-                c1 = lhsValue as IComparable;
-                c2 = rhsValue as IComparable;
+                    c1 = lhsValue as IComparable;
+                    c2 = rhsValue as IComparable;
 
-                if (c1 == null && c2 == null) {
-                    return null;
-                } else if (c1 == null || c2 == null) {
-                    return false;
-                } else if (lhsValue is int && rhsValue is int) {
-                    return (int)lhsValue == (int)rhsValue;
-                } else if (lhsValue is double && rhsValue is double) {
-                    return (double)lhsValue == (double)rhsValue;
-                } else if (lhsValue is int && rhsValue is double) {
-                    return (int)lhsValue == (double)rhsValue;
-                } else if (lhsValue is double && rhsValue is int) {
-                    return (double)lhsValue == (int)rhsValue;
-                } else if (lhsValue is string && rhsValue is string) {
-                    return lhsValue.ToString() == rhsValue.ToString();
-                } else {
-                    return c1.CompareTo(c2) == 0;
-                }
+                    if (c1 == null && c2 == null) {
+                        return null;
+                    } else if (c1 == null || c2 == null) {
+                        return false;
+                    } else if (lhsValue is int && rhsValue is int) {
+                        return (int)lhsValue == (int)rhsValue;
+                    } else if (lhsValue is double && rhsValue is double) {
+                        return (double)lhsValue == (double)rhsValue;
+                    } else if (lhsValue is int && rhsValue is double) {
+                        return (int)lhsValue == (double)rhsValue;
+                    } else if (lhsValue is double && rhsValue is int) {
+                        return (double)lhsValue == (int)rhsValue;
+                    } else if (lhsValue is string && rhsValue is string) {
+                        return lhsValue.ToString() == rhsValue.ToString();
+                    } else {
+                        return c1.CompareTo(c2) == 0;
+                    }
 
-            case TokenKind.OpIsNot:
+                case TokenKind.OpIsNot:
 
-                lhsValue = EvalExpression(exp.Lhs);
-                rhsValue = EvalExpression(exp.Rhs);
+                    lhsValue = EvalExpression(exp.Lhs);
+                    rhsValue = EvalExpression(exp.Rhs);
 
-                return !lhsValue.Equals(rhsValue);
+                    return !lhsValue.Equals(rhsValue);
 
-            case TokenKind.OpGt:
+                case TokenKind.OpGt:
 
-                lhsValue = EvalExpression(exp.Lhs);
-                rhsValue = EvalExpression(exp.Rhs);
+                    lhsValue = EvalExpression(exp.Lhs);
+                    rhsValue = EvalExpression(exp.Rhs);
 
-                c1 = lhsValue as IComparable;
-                c2 = rhsValue as IComparable;
+                    c1 = lhsValue as IComparable;
+                    c2 = rhsValue as IComparable;
 
-                if (c1 == null || c2 == null) {
-                    return false;
-                } else {
-                    return c1.CompareTo(c2) == 1;
-                }
+                    if (c1 == null || c2 == null) {
+                        return false;
+                    } else {
+                        return c1.CompareTo(c2) == 1;
+                    }
 
-            case TokenKind.OpAdd:
+                case TokenKind.OpAdd:
 
-                lhsValue = EvalExpression(exp.Lhs);
-                rhsValue = EvalExpression(exp.Rhs);
+                    lhsValue = EvalExpression(exp.Lhs);
+                    rhsValue = EvalExpression(exp.Rhs);
 
-                if (lhsValue == null || rhsValue == null) {
-                    return null;
-                } else if (lhsValue is int && rhsValue is int) {
-                    return (int)lhsValue + (int)rhsValue;
-                } else if (lhsValue is double && rhsValue is double) {
-                    return (double)lhsValue + (double)rhsValue;
-                } else if (lhsValue is int && rhsValue is double) {
-                    return (int)lhsValue + (double)rhsValue;
-                } else if (lhsValue is double && rhsValue is int) {
-                    return (double)lhsValue + (int)rhsValue;
-                } else if (lhsValue is string || rhsValue is string) {
-                    return lhsValue.ToString() + rhsValue.ToString();
-                } else {
-                    return Convert.ToDouble(lhsValue) + Convert.ToDouble(rhsValue);
-                }
+                    if (lhsValue == null || rhsValue == null) {
+                        return null;
+                    } else if (lhsValue is int && rhsValue is int) {
+                        return (int)lhsValue + (int)rhsValue;
+                    } else if (lhsValue is double && rhsValue is double) {
+                        return (double)lhsValue + (double)rhsValue;
+                    } else if (lhsValue is int && rhsValue is double) {
+                        return (int)lhsValue + (double)rhsValue;
+                    } else if (lhsValue is double && rhsValue is int) {
+                        return (double)lhsValue + (int)rhsValue;
+                    } else if (lhsValue is string || rhsValue is string) {
+                        return lhsValue.ToString() + rhsValue.ToString();
+                    } else {
+                        return Convert.ToDouble(lhsValue) + Convert.ToDouble(rhsValue);
+                    }
 
-            case TokenKind.OpConcat:
+                case TokenKind.OpConcat:
 
-                lhsValue = EvalExpression(exp.Lhs);
-                rhsValue = EvalExpression(exp.Rhs);
+                    lhsValue = EvalExpression(exp.Lhs);
+                    rhsValue = EvalExpression(exp.Rhs);
 
-                if (lhsValue == null || rhsValue == null) {
-                    return null;
-                } else {
-                    return lhsValue.ToString() + rhsValue.ToString();
-                }
+                    if (lhsValue == null || rhsValue == null) {
+                        return null;
+                    } else {
+                        return lhsValue.ToString() + rhsValue.ToString();
+                    }
 
-            case TokenKind.OpMul:
+                case TokenKind.OpMul:
 
-                lhsValue = EvalExpression(exp.Lhs);
-                rhsValue = EvalExpression(exp.Rhs);
+                    lhsValue = EvalExpression(exp.Lhs);
+                    rhsValue = EvalExpression(exp.Rhs);
 
-                if (lhsValue == null || rhsValue == null) {
-                    return null;
-                } else if (lhsValue is int && rhsValue is int) {
-                    return (int)lhsValue * (int)rhsValue;
-                } else if (lhsValue is double && rhsValue is double) {
-                    return (double)lhsValue * (double)rhsValue;
-                } else if (lhsValue is int && rhsValue is double) {
-                    return (int)lhsValue * (double)rhsValue;
-                } else if (lhsValue is double && rhsValue is int) {
-                    return (double)lhsValue * (int)rhsValue;
-                } else {
-                    return Convert.ToDouble(lhsValue) * Convert.ToDouble(rhsValue);
-                }
+                    if (lhsValue == null || rhsValue == null) {
+                        return null;
+                    } else if (lhsValue is int && rhsValue is int) {
+                        return (int)lhsValue * (int)rhsValue;
+                    } else if (lhsValue is double && rhsValue is double) {
+                        return (double)lhsValue * (double)rhsValue;
+                    } else if (lhsValue is int && rhsValue is double) {
+                        return (int)lhsValue * (double)rhsValue;
+                    } else if (lhsValue is double && rhsValue is int) {
+                        return (double)lhsValue * (int)rhsValue;
+                    } else {
+                        return Convert.ToDouble(lhsValue) * Convert.ToDouble(rhsValue);
+                    }
 
-            case TokenKind.OpDiv:
+                case TokenKind.OpDiv:
 
-                lhsValue = EvalExpression(exp.Lhs);
-                rhsValue = EvalExpression(exp.Rhs);
+                    lhsValue = EvalExpression(exp.Lhs);
+                    rhsValue = EvalExpression(exp.Rhs);
 
-                if (lhsValue == null || rhsValue == null) {
-                    return null;
-                } else if (lhsValue is int && rhsValue is int) {
-                    return (int)lhsValue / (int)rhsValue;
-                } else if (lhsValue is double && rhsValue is double) {
-                    return (double)lhsValue / (double)rhsValue;
-                } else if (lhsValue is int && rhsValue is double) {
-                    return (int)lhsValue / (double)rhsValue;
-                } else if (lhsValue is double && rhsValue is int) {
-                    return (double)lhsValue / (int)rhsValue;
-                } else {
-                    return Convert.ToDouble(lhsValue) / Convert.ToDouble(rhsValue);
-                }
+                    if (lhsValue == null || rhsValue == null) {
+                        return null;
+                    } else if (lhsValue is int && rhsValue is int) {
+                        return (int)lhsValue / (int)rhsValue;
+                    } else if (lhsValue is double && rhsValue is double) {
+                        return (double)lhsValue / (double)rhsValue;
+                    } else if (lhsValue is int && rhsValue is double) {
+                        return (int)lhsValue / (double)rhsValue;
+                    } else if (lhsValue is double && rhsValue is int) {
+                        return (double)lhsValue / (int)rhsValue;
+                    } else {
+                        return Convert.ToDouble(lhsValue) / Convert.ToDouble(rhsValue);
+                    }
 
-            case TokenKind.OpMod:
+                case TokenKind.OpMod:
 
-                lhsValue = EvalExpression(exp.Lhs);
-                rhsValue = EvalExpression(exp.Rhs);
+                    lhsValue = EvalExpression(exp.Lhs);
+                    rhsValue = EvalExpression(exp.Rhs);
 
-                if (lhsValue == null || rhsValue == null) {
-                    return null;
-                } else if (lhsValue is int && rhsValue is int) {
-                    return (int)lhsValue % (int)rhsValue;
-                } else if (lhsValue is double && rhsValue is double) {
-                    return (double)lhsValue % (double)rhsValue;
-                } else if (lhsValue is int && rhsValue is double) {
-                    return (int)lhsValue % (double)rhsValue;
-                } else if (lhsValue is double && rhsValue is int) {
-                    return (double)lhsValue % (int)rhsValue;
-                } else {
-                    return Convert.ToDouble(lhsValue) % Convert.ToDouble(rhsValue);
-                }
+                    if (lhsValue == null || rhsValue == null) {
+                        return null;
+                    } else if (lhsValue is int && rhsValue is int) {
+                        return (int)lhsValue % (int)rhsValue;
+                    } else if (lhsValue is double && rhsValue is double) {
+                        return (double)lhsValue % (double)rhsValue;
+                    } else if (lhsValue is int && rhsValue is double) {
+                        return (int)lhsValue % (double)rhsValue;
+                    } else if (lhsValue is double && rhsValue is int) {
+                        return (double)lhsValue % (int)rhsValue;
+                    } else {
+                        return Convert.ToDouble(lhsValue) % Convert.ToDouble(rhsValue);
+                    }
 
-            case TokenKind.OpPow:
+                case TokenKind.OpPow:
 
-                lhsValue = EvalExpression(exp.Lhs);
-                rhsValue = EvalExpression(exp.Rhs);
+                    lhsValue = EvalExpression(exp.Lhs);
+                    rhsValue = EvalExpression(exp.Rhs);
 
-                if (lhsValue == null || rhsValue == null) {
-                    return null;
-                } else if (lhsValue is int && rhsValue is int) {
-                    return Math.Pow((int)lhsValue , (int)rhsValue);
-                } else if (lhsValue is double && rhsValue is double) {
-                    return Math.Pow((double)lhsValue , (double)rhsValue);
-                } else if (lhsValue is int && rhsValue is double) {
-                    return Math.Pow((int)lhsValue , (double)rhsValue);
-                } else if (lhsValue is double && rhsValue is int) {
-                    return Math.Pow((double)lhsValue , (int)rhsValue);
-                } else {
-                    return Math.Pow(Convert.ToDouble(lhsValue) , Convert.ToDouble(rhsValue));
-                }
+                    if (lhsValue == null || rhsValue == null) {
+                        return null;
+                    } else if (lhsValue is int && rhsValue is int) {
+                        return Math.Pow((int)lhsValue , (int)rhsValue);
+                    } else if (lhsValue is double && rhsValue is double) {
+                        return Math.Pow((double)lhsValue , (double)rhsValue);
+                    } else if (lhsValue is int && rhsValue is double) {
+                        return Math.Pow((int)lhsValue , (double)rhsValue);
+                    } else if (lhsValue is double && rhsValue is int) {
+                        return Math.Pow((double)lhsValue , (int)rhsValue);
+                    } else {
+                        return Math.Pow(Convert.ToDouble(lhsValue) , Convert.ToDouble(rhsValue));
+                    }
 
-            case TokenKind.OpLt:
+                case TokenKind.OpLt:
 
-                lhsValue = EvalExpression(exp.Lhs);
-                rhsValue = EvalExpression(exp.Rhs);
+                    lhsValue = EvalExpression(exp.Lhs);
+                    rhsValue = EvalExpression(exp.Rhs);
 
-                c1 = lhsValue as IComparable;
-                c2 = rhsValue as IComparable;
+                    c1 = lhsValue as IComparable;
+                    c2 = rhsValue as IComparable;
 
-                if (c1 == null && c2 == null) {
-                    return false;
-                } else if (c1 == null || c2 == null) {
-                    return false;
-                } else if (lhsValue is int && rhsValue is int) {
-                    return (int)lhsValue < (int)rhsValue;
-                } else if (lhsValue is double && rhsValue is double) {
-                    return (double)lhsValue < (double)rhsValue;
-                } else if (lhsValue is int && rhsValue is double) {
-                    return (int)lhsValue < (double)rhsValue;
-                } else if (lhsValue is double && rhsValue is int) {
-                    return (double)lhsValue < (int)rhsValue;
-                } else {
-                    return c1.CompareTo(c2) == -1;
-                }
+                    if (c1 == null && c2 == null) {
+                        return false;
+                    } else if (c1 == null || c2 == null) {
+                        return false;
+                    } else if (lhsValue is int && rhsValue is int) {
+                        return (int)lhsValue < (int)rhsValue;
+                    } else if (lhsValue is double && rhsValue is double) {
+                        return (double)lhsValue < (double)rhsValue;
+                    } else if (lhsValue is int && rhsValue is double) {
+                        return (int)lhsValue < (double)rhsValue;
+                    } else if (lhsValue is double && rhsValue is int) {
+                        return (double)lhsValue < (int)rhsValue;
+                    } else {
+                        return c1.CompareTo(c2) == -1;
+                    }
 
-            case TokenKind.OpGte:
+                case TokenKind.OpGte:
 
-                lhsValue = EvalExpression(exp.Lhs);
-                rhsValue = EvalExpression(exp.Rhs);
+                    lhsValue = EvalExpression(exp.Lhs);
+                    rhsValue = EvalExpression(exp.Rhs);
 
-                c1 = lhsValue as IComparable;
-                c2 = rhsValue as IComparable;
+                    c1 = lhsValue as IComparable;
+                    c2 = rhsValue as IComparable;
 
-                if (c1 == null && c2 == null) {
-                    return false;
-                } else if (c1 == null || c2 == null) {
-                    return false;
-                } else if (lhsValue is int && rhsValue is int) {
-                    return (int)lhsValue >= (int)rhsValue;
-                } else if (lhsValue is double && rhsValue is double) {
-                    return (double)lhsValue >= (double)rhsValue;
-                } else if (lhsValue is int && rhsValue is double) {
-                    return (int)lhsValue >= (double)rhsValue;
-                } else if (lhsValue is double && rhsValue is int) {
-                    return (double)lhsValue >= (int)rhsValue;
-                } else {
-                    return c1.CompareTo(c2) >= 0;
-                }
+                    if (c1 == null && c2 == null) {
+                        return false;
+                    } else if (c1 == null || c2 == null) {
+                        return false;
+                    } else if (lhsValue is int && rhsValue is int) {
+                        return (int)lhsValue >= (int)rhsValue;
+                    } else if (lhsValue is double && rhsValue is double) {
+                        return (double)lhsValue >= (double)rhsValue;
+                    } else if (lhsValue is int && rhsValue is double) {
+                        return (int)lhsValue >= (double)rhsValue;
+                    } else if (lhsValue is double && rhsValue is int) {
+                        return (double)lhsValue >= (int)rhsValue;
+                    } else {
+                        return c1.CompareTo(c2) >= 0;
+                    }
 
-            case TokenKind.OpLte:
+                case TokenKind.OpLte:
 
-                lhsValue = EvalExpression(exp.Lhs);
-                rhsValue = EvalExpression(exp.Rhs);
+                    lhsValue = EvalExpression(exp.Lhs);
+                    rhsValue = EvalExpression(exp.Rhs);
 
-                c1 = lhsValue as IComparable;
-                c2 = rhsValue as IComparable;
+                    c1 = lhsValue as IComparable;
+                    c2 = rhsValue as IComparable;
 
-                if (c1 == null && c2 == null) {
-                    return false;
-                } else if (c1 == null || c2 == null) {
-                    return false;
-                } else if (lhsValue is int && rhsValue is int) {
-                    return (int)lhsValue <= (int)rhsValue;
-                } else if (lhsValue is double && rhsValue is double) {
-                    return (double)lhsValue <= (double)rhsValue;
-                } else if (lhsValue is int && rhsValue is double) {
-                    return (int)lhsValue <= (double)rhsValue;
-                } else if (lhsValue is double && rhsValue is int) {
-                    return (double)lhsValue <= (int)rhsValue;
-                } else {
-                    return c1.CompareTo(c2) <= 0;
-                }
+                    if (c1 == null && c2 == null) {
+                        return false;
+                    } else if (c1 == null || c2 == null) {
+                        return false;
+                    } else if (lhsValue is int && rhsValue is int) {
+                        return (int)lhsValue <= (int)rhsValue;
+                    } else if (lhsValue is double && rhsValue is double) {
+                        return (double)lhsValue <= (double)rhsValue;
+                    } else if (lhsValue is int && rhsValue is double) {
+                        return (int)lhsValue <= (double)rhsValue;
+                    } else if (lhsValue is double && rhsValue is int) {
+                        return (double)lhsValue <= (int)rhsValue;
+                    } else {
+                        return c1.CompareTo(c2) <= 0;
+                    }
 
-            default:
-                throw new VoltException("Operator " + exp.Operator.ToString() + " is not supported.", exp.Line, exp.Col);
+                default:
+                    throw new VoltException("Operator " + exp.Operator.ToString() + " is not supported.", exp.Line, exp.Col);
             }
         }
 
@@ -734,29 +738,29 @@ namespace Volte.Bot.Tpl
 
             try {
                 switch (name) {
-                case "define":
-                    break;
+                    case "define":
+                        break;
 
-                case "else":
-                    ProcessTokens(tag.Tokens);
-                    break;
+                    case "else":
+                        ProcessTokens(tag.Tokens);
+                        break;
 
-                case "using":
-                    object val = EvalExpression(tag.AttributeValue("tmpl"));
-                    ProcessTmpl(val.ToString(), tag);
-                    break;
+                    case "using":
+                        object val = EvalExpression(tag.AttributeValue("tmpl"));
+                        ProcessTmpl(val.ToString(), tag);
+                        break;
 
-                case "foreach":
-                    ProcessForeach(tag);
-                    break;
+                    case "foreach":
+                        ProcessForeach(tag);
+                        break;
 
-                case "for":
-                    ProcessFor(tag);
-                    break;
+                    case "for":
+                        ProcessFor(tag);
+                        break;
 
-                default:
-                    ProcessTmpl(tag.Name, tag);
-                    break;
+                    default:
+                        ProcessTmpl(tag.Name, tag);
+                        break;
                 }
             } catch (VoltException ex) {
                 DisplayError(ex);
